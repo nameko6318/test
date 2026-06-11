@@ -87,6 +87,66 @@
             border: 1px solid #252a3a;
         }
 
+        /* キャラクタープレビュー画像 */
+        .char-preview-container {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .preview-img {
+            width: 160px;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid var(--accent-heroine);
+            box-shadow: 0 0 15px rgba(58,150,255,0.3);
+            background: #000;
+        }
+
+        /* バトル画面用ビジュアル枠 */
+        #battle-visual-area {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(180deg, #101424 0%, #07080c 100%);
+            border: 1px solid #222530;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        #battle-visual-area::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to top, #07080c, transparent);
+            z-index: 2;
+        }
+        .battle-char-img {
+            height: 110%;
+            width: auto;
+            object-fit: contain;
+            position: relative;
+            bottom: -10px;
+            z-index: 1;
+            transition: transform 0.3s ease, filter 0.5s ease;
+        }
+        /* 玄墨陣法展開時のエフェクトバズ */
+        .visual-effect-glow {
+            box-shadow: inset 0 0 30px rgba(58,150,255,0.4);
+        }
+        /* 弱点：衣服汚染時のCSSフィルター */
+        .battle-char-img.polluted {
+            filter: sepia(40%) contrast(85%) brightness(60%) hue-rotate(15deg);
+            transform: scale(0.98);
+        }
+        .polluted-bg {
+            background: linear-gradient(180deg, #241a10 0%, #0c0805 100%) !important;
+            box-shadow: inset 0 0 20px rgba(139, 69, 19, 0.6);
+        }
+
         .btn {
             display: block;
             width: 100%;
@@ -286,6 +346,10 @@
         </div>
 
         <div id="forecast-area" style="display:none;">
+            <!-- キャラクターのプレビュー表示エリア -->
+            <div class="char-preview-container">
+                <img src="image.png" alt="儀玄 ビジュアル" class="preview-img">
+            </div>
             <div class="select-box">
                 <h3>2. 試合展開予想 & 難易度</h3>
                 <div>選択側難易度: <span id="difficulty-output"></span></div>
@@ -297,6 +361,11 @@
 
     <!-- フェーズ2：バトル画面 -->
     <div id="screen-battle" class="screen">
+        <!-- 追加：リアルタイムビジュアルエリア -->
+        <div id="battle-visual-area">
+            <img id="heroine-visual" src="image.png" alt="儀玄 立ち絵" class="battle-char-img">
+        </div>
+
         <div id="log-area"></div>
 
         <!-- ステータス表示 -->
@@ -502,7 +571,7 @@ function nextTurnLoop() {
     if (heroine.current.stunnedTurns > 0) {
         log(`【反動】儀玄は全エネルギー消費による行動不能状態（残り ${heroine.current.stunnedTurns} ターン）`, 'system');
         heroine.current.stunnedTurns--;
-        activeSide = 'enemy'; // 強制的に敵のターン
+        activeSide = 'enemy'; 
         forceNextTurnSide = null;
     } 
     // 戦法：カウンター＆ヒット＆アウェイによる強制手番チェック
@@ -522,7 +591,7 @@ function nextTurnLoop() {
 
     const activeChar = activeSide === 'heroine' ? heroine : enemy;
     
-    // バフ・デバフのターン経過処理（自身のターン開始時に減少）
+    // バフ・デバフのターン経過処理
     if (activeSide === 'heroine') {
         if (heroine.current.evadeBuffTurns > 0) {
             heroine.current.evadeBuffTurns--;
@@ -574,7 +643,6 @@ function aiTurn(side, char) {
         char.current.skippedLastTurn = true;
         log(`${char.name}は行動をパスした。`, 'text');
     } else {
-        // AIの単純な最大火力選択（陣法不可などの制約はAIには関係ないが、ヒロインAIの場合を考慮）
         let validCards = char.current.hand.filter(c => {
             if (side === 'heroine' && c.is阵法 && heroine.current.disable阵法Turns > 0) return false;
             return true;
@@ -629,18 +697,16 @@ function executeCardEffect(attackerSide, card) {
 
     log(`${attacker.name}の行動：<strong>【${card.name}】</strong>`, 'text');
 
-    // 特殊：玄墨陣法（バフ技）の発動処理
+    // 特殊：玄墨陣法（バフ技）
     if (isHeroineAttacking && card.is阵法) {
         heroine.current.evadeBuffTurns = 2;
         log(`🔮 儀玄の周囲に太極陣法が展開される！ 2ターンの間、回避値が+40される。`, 'system');
         return;
     }
 
-    // 命中・回避値計算
     let hitValue = attMod.spd + attMod.int + card.hit;
     let evadeValue = defMod.spd + defMod.int;
 
-    // 玄墨陣法による回避バフ反映
     if (!isHeroineAttacking && heroine.current.evadeBuffTurns > 0) {
         evadeValue += 40;
     }
@@ -650,22 +716,15 @@ function executeCardEffect(attackerSide, card) {
 
     const isHit = Math.random() < hitRate;
 
-    // --- 回避時の処理 ---
     if (!isHit) {
         log(`【MISS】 ${defender.name}は攻撃を鮮やかに回避した！`, 'text');
-        
-        // 儀玄の戦法：カウンター＆ヒット＆アウェイトリガー
         if (!isHeroineAttacking) {
             forceNextTurnSide = 'heroine'; 
         }
         return;
     }
 
-    // クリティカル判定
-    const critRate = attMod.int / 200;
-    const isCrit = Math.random() < critRate;
-
-    // ダメージ計算
+    const isCrit = Math.random() < (attMod.int / 200);
     let damage = attMod.atk + card.power - defMod.def;
     if (damage < 1) damage = 1;
     if (isCrit) damage = Math.floor(damage * 1.5);
@@ -678,20 +737,17 @@ function executeCardEffect(attackerSide, card) {
 
     // --- 固有の特殊効果・弱点処理 ---
     if (!isHeroineAttacking) {
-        // オークが儀玄に攻撃を命中させた時
         if (card.isWeaknessStriker) {
             heroine.current.isPolluted = true;
             heroine.current.state = "屈辱";
             log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の撒き散らした酸性汚泥・タールが黄色い道士服と符籙を無残に汚染！ 透徹力の循環が完全崩壊し、ATKとDEFが恒久的に-25された！</span>`, 'text');
-            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
+            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世 of 泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
         }
     } else {
-        // 儀玄がオークに攻撃を命中させた時
         if (card.isUltimate) {
-            // 青溟爆震の反動処理
-            heroine.current.evadeBuffTurns = 0; // 陣法消滅
-            heroine.current.disable阵法Turns = 2; // 2ターン陣法使用不可
-            heroine.current.stunnedTurns = 1; // 1ターン行動不能
+            heroine.current.evadeBuffTurns = 0; 
+            heroine.current.disable阵法Turns = 2; 
+            heroine.current.stunnedTurns = 1; 
             log(`⚡ 【青溟爆震の反動】全エーテルエネルギーを瞬時に吐き出した代償として、太極陣法が強制消滅。2ターンの間陣法が封じられ、次ターン行動不能となる！`, 'system');
 
             if (damage === 1) {
@@ -701,7 +757,6 @@ function executeCardEffect(attackerSide, card) {
         }
     }
 
-    // チャージ加算
     if (!card.isSpecial) {
         const n = Math.floor(Math.random() * 4);
         attacker.current.chargeValue += (card.charge * n);
@@ -723,7 +778,6 @@ function checkCharge(char) {
     }
 }
 
-// --- ターン開始前メンタルチェック ---
 function updateMentalStateBeforeTurn() {
     heroine.current.lastState = heroine.current.state;
     const hasHeroineSpecial = heroine.current.hand.some(c => c.isSpecial);
@@ -748,7 +802,6 @@ function checkDeath() {
     else if (enemy.current.hp <= 0) { isGameOver = true; endGame('heroine_win'); }
 }
 
-// --- フェーズ3: 結末描写 ---
 function endGame(result) {
     document.getElementById('screen-battle').classList.remove('active');
     document.getElementById('result-screen').classList.add('active');
@@ -782,12 +835,26 @@ function updateUI() {
     mTag.innerText = heroine.current.state;
     mTag.className = `mental-tag m-${heroine.current.state}`;
 
-    // 弱点状態のバッジ反映
+    // --- ビジュアル画像・背景の動的更新ギミック ---
+    const vImg = document.getElementById('heroine-visual');
+    const vArea = document.getElementById('battle-visual-area');
     const pollMarker = document.getElementById('polluted-marker');
+
     if (heroine.current.isPolluted) {
         pollMarker.innerHTML = `<span class="debuff-badge">衣服汚染</span>`;
+        vImg.classList.add('polluted');         // 画像にくすんだ汚染フィルターを適用
+        vArea.classList.add('polluted-bg');      // 背景をドロドロとした泥色グラデーションに変更
     } else {
         pollMarker.innerHTML = '';
+        vImg.classList.remove('polluted');
+        vArea.classList.remove('polluted-bg');
+    }
+
+    // 玄墨陣法展開時は枠が青く発光するエフェクト
+    if (heroine.current.evadeBuffTurns > 0) {
+        vArea.classList.add('visual-effect-glow');
+    } else {
+        vArea.classList.remove('visual-effect-glow');
     }
 
     const hMod = getModifiedStats(heroine, true);
@@ -802,7 +869,6 @@ function renderHand(char) {
     container.innerHTML = '';
     
     char.current.hand.forEach((card, idx) => {
-        // 陣法不可ターンのチェック
         const is陣法Disabled = (playerSide === 'heroine' && card.is阵法 && heroine.current.disable阵法Turns > 0);
 
         const cardEl = document.createElement('div');

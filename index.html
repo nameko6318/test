@@ -8,10 +8,10 @@
         :root {
             --bg-color: #0c0d10;
             --panel-bg: #151821;
-            --text-color: #e3e7f0;
-            --accent-heroine: #3a96ff; /* 儀玄のエーテルブルー */
+            --text-color: #f1f3f9;
+            --accent-heroine: #3a96ff; 
             --accent-enemy: #ff453a;
-            --text-inner: #9daec6;
+            --text-inner: #b0c2de;
             --text-spectator: #ffd60a;
         }
 
@@ -75,8 +75,8 @@
             padding: 12px;
             border-radius: 6px;
             margin-bottom: 15px;
-            border-left: 3px solid var(--accent-heroine);
             border: 1px solid #252a3a;
+            border-left: 3px solid var(--accent-heroine);
         }
 
         .select-box {
@@ -104,11 +104,11 @@
         /* バトル画面用ビジュアル枠 */
         #battle-visual-area {
             width: 100%;
-            height: 220px; /* 画像の縦横比に合わせて少し高さを調整 */
+            height: 220px;
             background: linear-gradient(180deg, #101424 0%, #07080c 100%);
             border: 1px solid #222530;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             position: relative;
             display: flex;
             justify-content: center;
@@ -120,7 +120,7 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 50px;
+            height: 40px;
             background: linear-gradient(to top, #07080c, transparent);
             z-index: 2;
         }
@@ -131,81 +131,130 @@
             position: relative;
             bottom: -5px;
             z-index: 1;
-            transition: transform 0.3s ease, filter 0.5s ease;
+            transition: transform 0.4s ease, filter 0.5s ease;
         }
-        /* 玄墨陣法展開時のエフェクト */
+
+        /* リアルな泥・タール付着レイヤー (mix-blend-modeでブレンド) */
+        #mud-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 35% 40%, rgba(38, 24, 12, 0.85) 0%, rgba(0,0,0,0) 55%),
+                radial-gradient(circle at 65% 75%, rgba(15, 12, 8, 0.95) 0%, rgba(0,0,0,0) 50%),
+                linear-gradient(135deg, rgba(0,0,0,0) 20%, rgba(28, 18, 10, 0.7) 60%, rgba(8, 5, 3, 0.9) 100%);
+            mix-blend-mode: multiply;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 3;
+            transition: opacity 0.5s ease;
+        }
+
+        /* 汚染時の画像本体のフィルター */
+        .battle-char-img.polluted-filter {
+            filter: sepia(45%) contrast(110%) brightness(50%) saturate(70%);
+            transform: scale(0.97);
+        }
+        .polluted-bg {
+            background: linear-gradient(180deg, #1f150e 0%, #080503 100%) !important;
+            box-shadow: inset 0 0 25px rgba(92, 53, 26, 0.7);
+        }
         .visual-effect-glow {
             box-shadow: inset 0 0 30px rgba(58,150,255,0.4);
         }
-        /* 弱点：衣服汚染時のCSSフィルター */
-        .battle-char-img.polluted {
-            filter: sepia(50%) contrast(80%) brightness(55%) hue-rotate(10deg);
-            transform: scale(0.98);
-        }
-        .polluted-bg {
-            background: linear-gradient(180deg, #241a10 0%, #0c0805 100%) !important;
-            box-shadow: inset 0 0 20px rgba(139, 69, 19, 0.6);
-        }
 
-        .btn {
-            display: block;
-            width: 100%;
-            background: #222533;
-            color: #fff;
-            padding: 14px;
-            margin: 8px 0;
+        /* フィルターON/OFFコントロールパネル */
+        .filter-control-panel {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+            padding: 0 2px;
+        }
+        .toggle-btn {
+            background: #1c1f2b;
+            color: #8892b0;
             border: 1px solid #3d4566;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: bold;
-            text-align: center;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
             cursor: pointer;
-        }
-
-        .btn-heroine { background: #132742; border-color: var(--accent-heroine); }
-        .btn-enemy { background: #3a1412; border-color: var(--accent-enemy); }
-        .btn-start { background: #1c5235; border-color: #2ed175; font-size: 1.1rem; margin-top: 15px; }
-
-        .difficulty-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 0.8rem;
             font-weight: bold;
-            margin-left: 10px;
+            transition: all 0.2s;
         }
-        .diff-EASY { background: #34c759; color: #fff; }
-        .diff-NORMAL { background: #ff9500; color: #fff; }
-        .diff-HARD { background: #ff3b30; color: #fff; }
-
-        .forecast-panel {
-            background: #12141c;
-            border: 1px dashed #3d4566;
-            padding: 12px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            margin-top: 10px;
+        .toggle-btn.active {
+            background: #613a1e;
+            color: #ffb87a;
+            border-color: #ad6b3b;
+            box-shadow: 0 0 8px rgba(173,107,59,0.3);
         }
 
+        /* テキスト表示欄の見やすさ大幅強化 */
         #log-area {
             flex: 1;
             overflow-y: auto;
             padding: 12px;
-            background: #07080c;
+            background: #090a0f;
             border-radius: 6px;
             margin-bottom: 10px;
-            font-size: 0.95rem;
-            border: 1px solid #1a1d29;
+            font-size: 0.9rem;
+            border: 1px solid #202433;
+            display: flex;
+            flex-direction: column;
         }
 
-        .log-entry { margin-bottom: 12px; word-break: break-all; }
-        .log-text { color: var(--text-color); }
-        .log-heroine-outer { color: var(--accent-heroine); font-weight: bold; }
-        .log-heroine-inner { color: var(--text-inner); font-style: italic; }
-        .log-enemy-speech { color: #ff6b6b; font-weight: bold; }
-        .log-spectator { color: var(--text-spectator); font-weight: 500; background: rgba(255,214,10,0.04); padding: 4px; border-radius: 4px; display: block; }
-        .log-system { color: #30d158; font-weight: bold; font-size: 0.85rem; }
-        .log-warning { color: #ff9500; font-weight: bold; }
+        /* 各ログエントリを独立した見え方にデザイン */
+        .log-entry {
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            line-height: 1.5;
+            word-break: break-all;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid #3d4566;
+        }
+
+        /* ログの種類ごとの明確な色分け */
+        .log-system { 
+            background: rgba(48, 209, 88, 0.06); 
+            border-left-color: #30d158; 
+            color: #5af283; 
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        .log-text { 
+            color: var(--text-color); 
+        }
+        .log-heroine-outer { 
+            color: #66aeff; 
+            font-weight: bold; 
+        }
+        .log-heroine-inner { 
+            color: var(--text-inner); 
+            font-style: italic; 
+            display: block;
+            margin-top: 4px;
+            padding-left: 8px;
+            border-left: 1px dashed #556278;
+        }
+        .log-enemy-speech { 
+            background: rgba(255, 69, 58, 0.05);
+            border-left-color: var(--accent-enemy);
+            color: #ff766f; 
+            font-weight: bold; 
+        }
+        .log-spectator { 
+            background: rgba(255, 214, 10, 0.05); 
+            border-left-color: var(--text-spectator);
+            color: #ffe14d;
+        }
+        .log-warning { 
+            background: rgba(255, 149, 0, 0.08);
+            border-left-color: #ff9500;
+            color: #ffb340; 
+            font-weight: bold; 
+        }
 
         #status-area {
             background: var(--panel-bg);
@@ -251,12 +300,13 @@
         .m-絶望 { background: #000000; color: #ff3b30; border: 1px solid #ff3b30; }
 
         .debuff-badge {
-            background: #d63031;
-            color: white;
+            background: #ff9500;
+            color: black;
             font-size: 10px;
-            padding: 1px 4px;
+            padding: 1px 5px;
             border-radius: 3px;
             margin-left: 4px;
+            font-weight: bold;
         }
 
         #command-area {
@@ -314,6 +364,35 @@
             font-weight: bold;
         }
 
+        /* 終了確認用大ボタン */
+        .end-trigger-btn {
+            background: linear-gradient(135deg, #8a1f11, #b82e14);
+            color: #fff;
+            border: 2px solid #ff6b6b;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 69, 58, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(255, 69, 58, 0.6); }
+            100% { transform: scale(1); }
+        }
+
+        .forecast-panel {
+            background: #12141c;
+            border: 1px dashed #3d4566;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
         #result-text {
             font-size: 0.95rem;
             white-space: pre-wrap;
@@ -359,7 +438,12 @@
 
     <div id="screen-battle" class="screen">
         <div id="battle-visual-area">
+            <div id="mud-overlay"></div>
             <img id="heroine-visual" src="https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000" alt="儀玄 立ち絵" class="battle-char-img">
+        </div>
+
+        <div class="filter-control-panel" id="filter-panel-area" style="display: none;">
+            <button id="filter-toggle-btn" class="toggle-btn active" onclick="toggleFilter()">汚染フィルター: ON</button>
         </div>
 
         <div id="log-area"></div>
@@ -397,8 +481,11 @@
 
         <div id="command-area">
             <div style="font-size:0.8rem; font-weight:bold; color:#a8b2d1;" id="turn-indicator">あなたのターン</div>
-            <div id="hand-container"></div>
-            <button class="pass-btn" id="pass-button" onclick="playerPass()">カードを使わずにターン終了 (次ドロー+2)</button>
+            <div id="battle-controls">
+                <div id="hand-container"></div>
+                <button class="pass-btn" id="pass-button" onclick="playerPass()">カードを使わずにターン終了 (次ドロー+2)</button>
+            </div>
+            <button id="end-trigger" class="end-trigger-btn" style="display: none;" onclick="goToEnding()">激闘終結：結末（エンディング）を確認する</button>
         </div>
     </div>
 
@@ -420,10 +507,10 @@ const initialData = {
         current: { 
             hp: 500, actionCount: 0, chargeValue: 0, hand: [], skippedLastTurn: false, 
             state: "通常", lastState: "通常",
-            isPolluted: false,       // 弱点：俗世の穢れフラグ
-            evadeBuffTurns: 0,       // 玄墨陣法の持続ターン
-            disable阵法Turns: 0,    // 青溟爆震による陣法使用不可ターン
-            stunnedTurns: 0         // 青溟爆震による行動不能ターン
+            isPolluted: false,       
+            evadeBuffTurns: 0,       
+            disable阵法Turns: 0,    
+            stunnedTurns: 0         
         },
         normalCards: [
             { id: "n1", name: "命破拳", power: 60, hit: 80, charge: 20, desc: "青黒い墨のエーテル掌打" },
@@ -470,6 +557,8 @@ let playerSide = 'heroine';
 let heroine, enemy;
 let isGameOver = false;
 let forceNextTurnSide = null;
+let isFilterEnabled = true; // フィルターのON/OFF状態管理
+let finalMatchResult = '';  // 結末保存用
 
 function selectSide(side) {
     playerSide = side;
@@ -603,7 +692,7 @@ function nextTurnLoop() {
 
     if(Math.random() < 0.4) {
         const yell = spectatorsPool[Math.floor(Math.random() * spectatorsPool.length)];
-        log(`<span class="log-spectator">観客席の歪んだ歓声: ${yell}</span>`, 'text');
+        log(`<span class="log-spectator">観客席の歪んだ歓声: ${yell}</span>`, 'spectator');
     }
 
     if (playerSide === activeSide) {
@@ -716,7 +805,7 @@ function executeCardEffect(attackerSide, card) {
         if (card.isWeaknessStriker) {
             heroine.current.isPolluted = true;
             heroine.current.state = "屈辱";
-            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の撒き散らした酸性汚泥・タールが黄色い道士服と符籙を無残に汚染！ 透徹力の循環が完全崩壊し、ATKとDEFが恒久的に-25された！</span>`, 'text');
+            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の撒き散らした酸性汚泥・タールが黄色い道士服と符籙を無残に汚染！ 透徹力の循環が完全崩壊し、ATK and DEFが恒久的に-25された！</span>`, 'warning');
             log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
         }
     } else {
@@ -728,7 +817,7 @@ function executeCardEffect(attackerSide, card) {
 
             if (damage === 1) {
                 heroine.current.state = "絶望";
-                log(`⚠️ 極限まで解放した術式がオークの強靭な肉体に弾かれダメージは僅か1！ 儀玄の誇りが内側から瓦解し、【絶望】状態へ転落した。`, 'system');
+                log(`⚠️ 極限まで解放した術式がオークの強靭な肉体に弾かれダメージは僅か1！ 儀玄の誇りが内側から瓦解し、【絶望】状態へ転落した。`, 'warning');
             }
         }
     }
@@ -769,23 +858,56 @@ function updateMentalStateBeforeTurn() {
         }
     } else if (heroine.current.lastState === "怯え" && hasEnemySpecial) {
         heroine.current.state = "絶望";
-        log(`☠️ 儀玄の精神が【絶望】へと陥る。肉体的な劣勢に加え、オークの放つ凶悪な一撃の予兆が彼女の心をへし折る。`, 'system');
+        log(`☠️ 儀玄の精神が【絶望】へと陥る。肉体的な劣勢に加え、オークの放つ凶悪な一撃の予兆が彼女の心をへし折る。`, 'warning');
     }
 }
 
-function checkDeath() {
-    if (heroine.current.hp <= 0) { isGameOver = true; endGame('enemy_win'); }
-    else if (enemy.current.hp <= 0) { isGameOver = true; endGame('heroine_win'); }
+// フィルターON/OFFの切り替えロジック
+function toggleFilter() {
+    isFilterEnabled = !isFilterEnabled;
+    const btn = document.getElementById('filter-toggle-btn');
+    if (isFilterEnabled) {
+        btn.innerText = "汚染フィルター: ON";
+        btn.classList.add('active');
+    } else {
+        btn.innerText = "汚染フィルター: OFF";
+        btn.classList.remove('active');
+    }
+    updateUI();
 }
 
-function endGame(result) {
+function checkDeath() {
+    if (heroine.current.hp <= 0) { 
+        isGameOver = true; 
+        finalMatchResult = 'enemy_win';
+        showEndingButton();
+    }
+    else if (enemy.current.hp <= 0) { 
+        isGameOver = true; 
+        finalMatchResult = 'heroine_win';
+        showEndingButton();
+    }
+}
+
+// すぐ結果画面に行かず、ボタンを出現させる
+function showEndingButton() {
+    log(`<strong>☠️ 決着 ☠️ 闘技場の試合終了。勝敗が決しました。</strong>`, 'warning');
+    
+    // 通常の操作盤を非表示にし、エンディングを見るボタンを表示
+    document.getElementById('battle-controls').style.display = 'none';
+    document.getElementById('turn-indicator').innerText = "試合終了";
+    document.getElementById('end-trigger').style.display = 'block';
+    document.getElementById('command-area').style.pointerEvents = 'auto';
+}
+
+function goToEnding() {
     document.getElementById('screen-battle').classList.remove('active');
     document.getElementById('result-screen').classList.add('active');
 
     const titleEl = document.getElementById('result-title');
     const textEl = document.getElementById('result-text');
 
-    if (result === 'heroine_win') {
+    if (finalMatchResult === 'heroine_win') {
         titleEl.innerText = "雲霄の掌門・儀玄 勝利";
         titleEl.style.color = "var(--accent-heroine)";
         textEl.innerHTML = `激闘の末、儀玄は青黒い墨のエーテルを極限まで尖らせた【命破拳】をオークの心核へと穿った。\n\n「これにて易は決した。悪業の報い、あの世で受けるが良い」\n\n崩れ落ちる巨体。水を打ったように静まり返る観客席。人質たちは、最高峰のコスプレイヤーが見せた超然たる術式と圧倒的な勝利の決めポーズに、ただ息を呑んでひれ伏していた。彼女の気丈で神聖な姿は、歪んだ熱狂すらも純粋な畏怖へと塗り替えたのだ。人質たちの救出フェーズへと移行する。`;
@@ -812,16 +934,30 @@ function updateUI() {
 
     const vImg = document.getElementById('heroine-visual');
     const vArea = document.getElementById('battle-visual-area');
+    const mud = document.getElementById('mud-overlay');
+    const fPanel = document.getElementById('filter-panel-area');
     const pollMarker = document.getElementById('polluted-marker');
 
     if (heroine.current.isPolluted) {
         pollMarker.innerHTML = `<span class="debuff-badge">衣服汚染</span>`;
-        vImg.classList.add('polluted');         
-        vArea.classList.add('polluted-bg');      
+        fPanel.style.display = 'flex'; // 汚染されたらトグルスイッチを露出
+
+        // フィルター設定がONの時のみリアル泥レイヤーと画像暗濁化を適用
+        if (isFilterEnabled) {
+            vImg.classList.add('polluted-filter');         
+            vArea.classList.add('polluted-bg');      
+            mud.style.opacity = '1';
+        } else {
+            vImg.classList.remove('polluted-filter');         
+            vArea.classList.remove('polluted-bg');      
+            mud.style.opacity = '0';
+        }
     } else {
         pollMarker.innerHTML = '';
-        vImg.classList.remove('polluted');
-        vArea.classList.remove('polluted-bg');
+        fPanel.style.display = 'none';
+        vImg.classList.remove('polluted-filter');         
+        vArea.classList.remove('polluted-bg');      
+        mud.style.opacity = '0';
     }
 
     if (heroine.current.evadeBuffTurns > 0) {
@@ -861,13 +997,15 @@ function renderHand(char) {
     });
 }
 
+// ログ出力（自動スクロールを廃止し、最新のログを『一番上』に挿入するように変更）
 function log(text, type) {
     const logArea = document.getElementById('log-area');
     const entry = document.createElement('div');
     entry.className = `log-entry log-${type}`;
     entry.innerHTML = text;
-    logArea.appendChild(entry);
-    logArea.scrollTop = logArea.scrollHeight;
+    
+    // 最新ログを最上部に挿入
+    logArea.insertBefore(entry, logArea.firstChild);
 }
 </script>
 </body>

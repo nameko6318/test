@@ -104,7 +104,7 @@
         /* バトル画面用ビジュアル枠 */
         #battle-visual-area {
             width: 100%;
-            height: 180px;
+            height: 220px; /* 画像の縦横比に合わせて少し高さを調整 */
             background: linear-gradient(180deg, #101424 0%, #07080c 100%);
             border: 1px solid #222530;
             border-radius: 8px;
@@ -125,21 +125,21 @@
             z-index: 2;
         }
         .battle-char-img {
-            height: 110%;
+            height: 105%;
             width: auto;
             object-fit: contain;
             position: relative;
-            bottom: -10px;
+            bottom: -5px;
             z-index: 1;
             transition: transform 0.3s ease, filter 0.5s ease;
         }
-        /* 玄墨陣法展開時のエフェクトバズ */
+        /* 玄墨陣法展開時のエフェクト */
         .visual-effect-glow {
             box-shadow: inset 0 0 30px rgba(58,150,255,0.4);
         }
         /* 弱点：衣服汚染時のCSSフィルター */
         .battle-char-img.polluted {
-            filter: sepia(40%) contrast(85%) brightness(60%) hue-rotate(15deg);
+            filter: sepia(50%) contrast(80%) brightness(55%) hue-rotate(10deg);
             transform: scale(0.98);
         }
         .polluted-bg {
@@ -331,7 +331,6 @@
 
 <div id="game-container">
 
-    <!-- フェーズ1：キャラクター選択画面 -->
     <div id="screen-select" class="screen active">
         <h1>闘技場のコスプレイヤー</h1>
         <div class="world-desc">
@@ -346,9 +345,8 @@
         </div>
 
         <div id="forecast-area" style="display:none;">
-            <!-- キャラクターのプレビュー表示エリア -->
             <div class="char-preview-container">
-                <img src="image.png" alt="儀玄 ビジュアル" class="preview-img">
+                <img src="https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000" alt="儀玄 ビジュアル" class="preview-img">
             </div>
             <div class="select-box">
                 <h3>2. 試合展開予想 & 難易度</h3>
@@ -359,18 +357,14 @@
         </div>
     </div>
 
-    <!-- フェーズ2：バトル画面 -->
     <div id="screen-battle" class="screen">
-        <!-- 追加：リアルタイムビジュアルエリア -->
         <div id="battle-visual-area">
-            <img id="heroine-visual" src="image.png" alt="儀玄 立ち絵" class="battle-char-img">
+            <img id="heroine-visual" src="https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000" alt="儀玄 立ち絵" class="battle-char-img">
         </div>
 
         <div id="log-area"></div>
 
-        <!-- ステータス表示 -->
         <div id="status-area">
-            <!-- ヒロインステータス -->
             <div class="status-row">
                 <span style="color:var(--accent-heroine); font-weight:bold;">儀玄 <span id="polluted-marker"></span></span>
                 <span id="heroine-mental" class="mental-tag m-通常">通常</span>
@@ -384,7 +378,6 @@
                 <span>倍率速度: <span id="h-speed-val">-</span></span>
             </div>
 
-            <!-- 敵ステータス -->
             <div class="status-row">
                 <span style="color:#ff6b6b; font-weight:bold;">オーク</span>
                 <div class="gauge-container" style="width: 40%;">
@@ -402,7 +395,6 @@
             </div>
         </div>
 
-        <!-- コマンド＆手札 -->
         <div id="command-area">
             <div style="font-size:0.8rem; font-weight:bold; color:#a8b2d1;" id="turn-indicator">あなたのターン</div>
             <div id="hand-container"></div>
@@ -410,7 +402,6 @@
         </div>
     </div>
 
-    <!-- フェーズ3：結末画面 -->
     <div id="result-screen" class="screen">
         <h1 id="result-title">戦闘結末</h1>
         <div id="result-text"></div>
@@ -478,9 +469,8 @@ const spectatorsPool = [
 let playerSide = 'heroine';
 let heroine, enemy;
 let isGameOver = false;
-let forceNextTurnSide = null; // カウンター＆ヒット＆アウェイ用
+let forceNextTurnSide = null;
 
-// --- フェーズ1: キャラ選択 ---
 function selectSide(side) {
     playerSide = side;
     heroine = JSON.parse(JSON.stringify(initialData.heroine));
@@ -499,7 +489,6 @@ function selectSide(side) {
     }
 }
 
-// --- フェーズ2: バトル開始 ---
 function startBattle() {
     document.getElementById('screen-select').classList.remove('active');
     document.getElementById('screen-battle').classList.add('active');
@@ -525,19 +514,16 @@ function drawCard(char, type) {
     char.current.hand.push({ ...randomCard });
 }
 
-// --- ステータス補正 ---
 function getModifiedStats(char, isHeroine) {
     let mod = { atk: char.stats.atk, def: char.stats.def, spd: char.stats.spd, int: char.stats.int };
     
     if (!isHeroine) return mod;
 
-    // 弱点：俗世の穢れ（恒久デバフ）
     if (char.current.isPolluted) {
         mod.atk -= 25;
         mod.def -= 25;
     }
 
-    // メンタルデバフ・バフ
     switch(char.current.state) {
         case "昂揚": mod.atk += 10; mod.int += 10; break;
         case "怯え": mod.atk -= 5; mod.int -= 5; mod.spd -= 5; break;
@@ -559,7 +545,6 @@ function calculateNextTurnSpeed() {
     return { hSpeed, eSpeed };
 }
 
-// --- メインループ ---
 function nextTurnLoop() {
     if (isGameOver) return;
 
@@ -567,14 +552,12 @@ function nextTurnLoop() {
 
     let activeSide = '';
 
-    // 行動不能（スタン）チェック
     if (heroine.current.stunnedTurns > 0) {
         log(`【反動】儀玄は全エネルギー消費による行動不能状態（残り ${heroine.current.stunnedTurns} ターン）`, 'system');
         heroine.current.stunnedTurns--;
         activeSide = 'enemy'; 
         forceNextTurnSide = null;
     } 
-    // 戦法：カウンター＆ヒット＆アウェイによる強制手番チェック
     else if (forceNextTurnSide) {
         activeSide = forceNextTurnSide;
         log(`⚡ <strong>儀玄の戦法【カウンター＆ヒット＆アウェイ】発動！ 回避から流れるように自身の主導権へ持ち込む！</strong>`, 'system');
@@ -591,7 +574,6 @@ function nextTurnLoop() {
 
     const activeChar = activeSide === 'heroine' ? heroine : enemy;
     
-    // バフ・デバフのターン経過処理
     if (activeSide === 'heroine') {
         if (heroine.current.evadeBuffTurns > 0) {
             heroine.current.evadeBuffTurns--;
@@ -602,7 +584,6 @@ function nextTurnLoop() {
         }
     }
 
-    // ドロー処理
     const drawCount = activeChar.current.skippedLastTurn ? 2 : 1;
     activeChar.current.skippedLastTurn = false;
     for(let i=0; i<drawCount; i++) {
@@ -637,7 +618,6 @@ function nextTurnLoop() {
     }
 }
 
-// --- AI行動 ---
 function aiTurn(side, char) {
     if (char.current.hand.length === 0) {
         char.current.skippedLastTurn = true;
@@ -663,7 +643,6 @@ function aiTurn(side, char) {
     setTimeout(nextTurnLoop, 1500);
 }
 
-// --- プレイヤー行動 ---
 function useCard(index) {
     const char = playerSide === 'heroine' ? heroine : enemy;
     const card = char.current.hand[index];
@@ -686,7 +665,6 @@ function playerPass() {
     setTimeout(nextTurnLoop, 1500);
 }
 
-// --- 戦闘計算・効果発動 ---
 function executeCardEffect(attackerSide, card) {
     const isHeroineAttacking = attackerSide === 'heroine';
     const attacker = isHeroineAttacking ? heroine : enemy;
@@ -697,7 +675,6 @@ function executeCardEffect(attackerSide, card) {
 
     log(`${attacker.name}の行動：<strong>【${card.name}】</strong>`, 'text');
 
-    // 特殊：玄墨陣法（バフ技）
     if (isHeroineAttacking && card.is阵法) {
         heroine.current.evadeBuffTurns = 2;
         log(`🔮 儀玄の周囲に太極陣法が展開される！ 2ターンの間、回避値が+40される。`, 'system');
@@ -735,13 +712,12 @@ function executeCardEffect(attackerSide, card) {
     if (isCrit) log(`💥 クリティカル！ 急所を撃ち抜いた！`, 'system');
     log(`${defender.name}に <strong>${damage}</strong> のダメージ！`, 'text');
 
-    // --- 固有の特殊効果・弱点処理 ---
     if (!isHeroineAttacking) {
         if (card.isWeaknessStriker) {
             heroine.current.isPolluted = true;
             heroine.current.state = "屈辱";
             log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の撒き散らした酸性汚泥・タールが黄色い道士服と符籙を無残に汚染！ 透徹力の循環が完全崩壊し、ATKとDEFが恒久的に-25された！</span>`, 'text');
-            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世 of 泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
+            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
         }
     } else {
         if (card.isUltimate) {
@@ -820,7 +796,6 @@ function endGame(result) {
     }
 }
 
-// --- UI更新 ---
 function updateUI() {
     document.getElementById('heroine-hp-bar').style.width = `${(heroine.current.hp / 500) * 100}%`;
     document.getElementById('heroine-hp-text').innerText = `HP: ${heroine.current.hp} / 500`;
@@ -835,22 +810,20 @@ function updateUI() {
     mTag.innerText = heroine.current.state;
     mTag.className = `mental-tag m-${heroine.current.state}`;
 
-    // --- ビジュアル画像・背景の動的更新ギミック ---
     const vImg = document.getElementById('heroine-visual');
     const vArea = document.getElementById('battle-visual-area');
     const pollMarker = document.getElementById('polluted-marker');
 
     if (heroine.current.isPolluted) {
         pollMarker.innerHTML = `<span class="debuff-badge">衣服汚染</span>`;
-        vImg.classList.add('polluted');         // 画像にくすんだ汚染フィルターを適用
-        vArea.classList.add('polluted-bg');      // 背景をドロドロとした泥色グラデーションに変更
+        vImg.classList.add('polluted');         
+        vArea.classList.add('polluted-bg');      
     } else {
         pollMarker.innerHTML = '';
         vImg.classList.remove('polluted');
         vArea.classList.remove('polluted-bg');
     }
 
-    // 玄墨陣法展開時は枠が青く発光するエフェクト
     if (heroine.current.evadeBuffTurns > 0) {
         vArea.classList.add('visual-effect-glow');
     } else {

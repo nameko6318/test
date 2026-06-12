@@ -15,7 +15,6 @@
             --text-spectator: #ffd60a;
         }
 
-        /* スマホの誤作動による引っ張ってリロード(Pull-to-refresh)を完全に防止 */
         html, body {
             overscroll-behavior-y: none;
         }
@@ -51,7 +50,7 @@
             overflow: hidden;
             border-left: 1px solid #222530;
             border-right: 1px solid #222530;
-            overscroll-behavior-y: none; /* コンテナ側でも重ねてリロード防止 */
+            overscroll-behavior-y: none;
         }
 
         .screen {
@@ -70,19 +69,9 @@
         h1 {
             text-align: center;
             font-size: 1.3rem;
-            margin-bottom: 8px;
+            margin-bottom: 15px;
             color: var(--accent-heroine);
             text-shadow: 0 0 12px rgba(58,150,255,0.4);
-        }
-
-        .world-desc {
-            font-size: 0.8rem;
-            background: #181b26;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            border: 1px solid #252a3a;
-            border-left: 3px solid var(--accent-heroine);
         }
 
         .select-box {
@@ -109,6 +98,8 @@
         .btn-heroine { background: #1d71ff; }
         .btn-enemy { background: #4b5366; }
         .btn-start { background: #30d158; }
+        .btn-copy { background: #3d4566; border: 1px solid #5a6594; }
+        .btn-copy:active { background: #2b314a; }
 
         .char-preview-container {
             text-align: center;
@@ -122,7 +113,6 @@
             background: #000;
         }
 
-        /* 画像をメインに据えるため、縦幅を135px → 220pxへ大幅拡大 */
         #battle-visual-area {
             width: 100%;
             height: 220px;
@@ -140,13 +130,12 @@
         .battle-char-img {
             height: 100%;
             width: 100%;
-            object-fit: contain; /* 枠内に収まる最大サイズで綺麗に表示 */
+            object-fit: contain;
             position: relative;
             z-index: 1;
             transition: transform 0.4s ease, filter 0.5s ease;
         }
 
-        /* 泥・タールレイヤー */
         #mud-overlay {
             position: absolute;
             top: 0;
@@ -198,10 +187,9 @@
             border-color: #ad6b3b;
         }
 
-        /* テキスト表示欄（ログエリア）下に追加され、自動で動かない設定 */
         #log-area {
             flex: 1; 
-            min-height: 0; /* フレックス縮小を正しく機能させる */
+            min-height: 0;
             overflow-y: auto;
             padding: 10px;
             background: #090a0f;
@@ -209,6 +197,8 @@
             margin-bottom: 4px;
             font-size: 0.95rem;
             border: 1px solid #202433;
+            display: flex;
+            flex-direction: column;
         }
 
         .log-entry {
@@ -236,7 +226,6 @@
         .log-spectator { background: rgba(255, 214, 10, 0.05); border-left-color: var(--text-spectator); color: #ffe14d;}
         .log-warning { background: rgba(255, 149, 0, 0.08); border-left-color: #ff9500; color: #ffb340; font-weight: bold; }
 
-        /* ステータスエリアをさらに低床・コンパクト化 */
         #status-area {
             background: var(--panel-bg);
             padding: 6px 8px;
@@ -290,7 +279,6 @@
             font-weight: bold;
         }
 
-        /* コマンドエリアの極小化 */
         #command-area {
             background: #151821;
             padding: 6px 8px;
@@ -372,409 +360,7 @@
         #result-text {
             font-size: 0.95rem;
             white-space: pre-wrap;
-            margin-bottom: 20px;
-            flex: 1;
-            background: #07080c;
-            padding: 15px;
-            border-radius: 6px;
-            overflow-y: auto;
-            border: 1px solid #252a3a;
-        }
-    </style>
-</head>
-<body>
-
-<div id="game-container">
-
-    <div id="screen-select" class="screen active">
-        <h1>闘技場のコスプレイヤー修正したゲームコードを作成しました。
-
-### 主な修正点：
-
-1.  **画像の表示修正**: `heroineImages` 配列内のプレースホルダーURL（`image_2.png` など）を、以前提供された機能する実際のURLに一時的に置き換えました。これにより、「？」と表示される問題は解決します。
-    * **重要**: 現在はすべてのポーズで同じ画像が表示されます。異なるポーズを表示させるには、コード内の `heroineImages` 配列の2枚目以降をご自身で実際の画像URLに書き換えてください。
-2.  **戦闘ログのコピーボタン**: 戦闘終了後、リザルト画面に「戦闘ログをコピー」ボタンを追加しました。これをクリックすると、戦闘中のすべてのログがクリップボードにコピーされます。
-
-修正したコードは以下の通りです。このコードをそのままHTMLファイルとして保存して実行してください。
-
-```html
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>闘技場のコスプレイヤー - 雲霄の掌門・儀玄</title>
-    <style>
-        :root {
-            --bg-color: #0c0d10;
-            --panel-bg: #151821;
-            --text-color: #f1f3f9;
-            --accent-heroine: #3a96ff; 
-            --accent-enemy: #ff453a;
-            --text-inner: #b0c2de;
-            --text-spectator: #ffd60a;
-        }
-
-        /* スマホの誤作動による引っ張ってリロード(Pull-to-refresh)を完全に防止 */
-        html, body {
-            overscroll-behavior-y: none;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        body {
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        #game-container {
-            width: 100%;
-            max-width: 480px;
-            height: 100vh;
-            background-color: #0f111a;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-            border-left: 1px solid #222530;
-            border-right: 1px solid #222530;
-            overscroll-behavior-y: none; /* コンテナ側でも重ねてリロード防止 */
-        }
-
-        .screen {
-            display: none;
-            width: 100%;
-            height: 100%;
-            flex-direction: column;
-            padding: 10px;
-            overflow-y: auto;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 1.3rem;
-            margin-bottom: 8px;
-            color: var(--accent-heroine);
-            text-shadow: 0 0 12px rgba(58,150,255,0.4);
-        }
-
-        .world-desc {
-            font-size: 0.8rem;
-            background: #181b26;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            border: 1px solid #252a3a;
-            border-left: 3px solid var(--accent-heroine);
-        }
-
-        .select-box {
-            background: var(--panel-bg);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border: 1px solid #252a3a;
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            color: #fff;
-            transition: background 0.2s;
-        }
-        .btn-heroine { background: #1d71ff; }
-        .btn-enemy { background: #4b5366; }
-        .btn-start { background: #30d158; }
-
-        .char-preview-container {
-            text-align: center;
-            margin: 5px 0;
-        }
-        .preview-img {
-            width: 140px;
-            height: auto;
-            border-radius: 8px;
-            border: 2px solid var(--accent-heroine);
-            background: #000;
-        }
-
-        /* 画像をメインに据えるため、縦幅を135px → 220pxへ大幅拡大 */
-        #battle-visual-area {
-            width: 100%;
-            height: 220px;
-            background: linear-gradient(180deg, #101424 0%, #07080c 100%);
-            border: 1px solid #222530;
-            border-radius: 8px;
-            margin-bottom: 4px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .battle-char-img {
-            height: 100%;
-            width: 100%;
-            object-fit: contain; /* 枠内に収まる最大サイズで綺麗に表示 */
-            position: relative;
-            z-index: 1;
-            transition: transform 0.4s ease, filter 0.5s ease;
-        }
-
-        /* 泥・タールレイヤー */
-        #mud-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 35% 40%, rgba(38, 24, 12, 0.85) 0%, rgba(0,0,0,0) 55%),
-                radial-gradient(circle at 65% 75%, rgba(15, 12, 8, 0.95) 0%, rgba(0,0,0,0) 50%),
-                linear-gradient(135deg, rgba(0,0,0,0) 20%, rgba(28, 18, 10, 0.7) 60%, rgba(8, 5, 3, 0.9) 100%);
-            mix-blend-mode: multiply;
-            pointer-events: none;
-            opacity: 0;
-            z-index: 3;
-            transition: opacity 0.5s ease;
-        }
-
-        .battle-char-img.polluted-filter {
-            filter: sepia(45%) contrast(110%) brightness(50%) saturate(70%);
-        }
-        .polluted-bg {
-            background: linear-gradient(180deg, #1f150e 0%, #080503 100%) !important;
-        }
-        .visual-effect-glow {
-            box-shadow: inset 0 0 30px rgba(58,150,255,0.4);
-        }
-
-        .filter-control-panel {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 4px;
-            padding: 0 2px;
-            flex-shrink: 0;
-        }
-        .toggle-btn {
-            background: #1c1f2b;
-            color: #8892b0;
-            border: 1px solid #3d4566;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-        .toggle-btn.active {
-            background: #613a1e;
-            color: #ffb87a;
-            border-color: #ad6b3b;
-        }
-
-        /* テキスト表示欄（ログエリア）下に追加され、自動で動かない設定 */
-        #log-area {
-            flex: 1; 
-            min-height: 0; /* フレックス縮小を正しく機能させる */
-            overflow-y: auto;
-            padding: 10px;
-            background: #090a0f;
-            border-radius: 6px;
-            margin-bottom: 4px;
-            font-size: 0.95rem;
-            border: 1px solid #202433;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .log-entry {
-            margin-bottom: 8px;
-            padding: 8px 10px;
-            border-radius: 6px;
-            line-height: 1.4;
-            word-break: break-all;
-            background: rgba(255, 255, 255, 0.02);
-            border-left: 3px solid #3d4566;
-        }
-
-        .log-system { background: rgba(48, 209, 88, 0.06); border-left-color: #30d158; color: #5af283; font-weight: bold; font-size: 0.85rem;}
-        .log-text { color: var(--text-color); }
-        .log-heroine-outer { color: #66aeff; font-weight: bold; }
-        .log-heroine-inner { 
-            color: var(--text-inner); 
-            font-style: italic; 
-            display: block;
-            margin-top: 4px;
-            padding-left: 8px;
-            border-left: 1px dashed #556278;
-        }
-        .log-enemy-speech { background: rgba(255, 69, 58, 0.05); border-left-color: var(--accent-enemy); color: #ff766f; font-weight: bold; }
-        .log-spectator { background: rgba(255, 214, 10, 0.05); border-left-color: var(--text-spectator); color: #ffe14d;}
-        .log-warning { background: rgba(255, 149, 0, 0.08); border-left-color: #ff9500; color: #ffb340; font-weight: bold; }
-
-        /* ステータスエリアをさらに低床・コンパクト化 */
-        #status-area {
-            background: var(--panel-bg);
-            padding: 6px 8px;
-            border-radius: 6px;
-            margin-bottom: 4px;
-            font-size: 0.8rem;
-            border: 1px solid #252a3a;
-            flex-shrink: 0;
-        }
-
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 3px;
-        }
-
-        .gauge-container {
-            background: #222533;
-            height: 10px;
-            border-radius: 5px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .gauge-bar { height: 100%; transition: width 0.3s ease; }
-        .hp-bar-heroine { background: linear-gradient(90deg, #1d71ff, #3a96ff); }
-        .hp-bar-enemy { background: linear-gradient(90deg, #ff3b30, #ff453a); }
-        .charge-bar { background: linear-gradient(90deg, #ff9500, #ffd60a); }
-        .gauge-text { position: absolute; width: 100%; text-align: center; font-size: 8px; line-height: 10px; color: #fff; font-weight: bold; }
-
-        .mental-tag {
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-weight: bold;
-            font-size: 0.65rem;
-            text-align: center;
-        }
-        .m-通常 { background: #636e72; color: #fff; }
-        .m-昂揚 { background: #0984e3; color: #fff; }
-        .m-怯え { background: #6c5ce7; color: #fff; }
-        .m-屈辱 { background: #a29bfe; color: #fff; }
-        .m-絶望 { background: #000000; color: #ff3b30; border: 1px solid #ff3b30; }
-
-        .debuff-badge {
-            background: #ff9500;
-            color: black;
-            font-size: 9px;
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-
-        /* コマンドエリアの極小化 */
-        #command-area {
-            background: #151821;
-            padding: 6px 8px;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            border: 1px solid #252a3a;
-            flex-shrink: 0;
-        }
-
-        #hand-container {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding-bottom: 2px;
-            height: 84px;
-            transition: all 0.2s;
-        }
-
-        .card {
-            flex: 0 0 90px;
-            height: 76px;
-            background: #222636;
-            border: 1px solid #3d4566;
-            border-radius: 5px;
-            padding: 4px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            cursor: pointer;
-            color: #fff;
-        }
-        .card.special {
-            background: linear-gradient(135deg, #1b2640, #133966);
-            border-color: var(--accent-heroine);
-            box-shadow: 0 0 6px rgba(58,150,255,0.4);
-        }
-        .card.disabled {
-            opacity: 0.4;
-            pointer-events: none;
-            background: #2d3142 !important;
-        }
-        .card-name { font-weight: bold; line-height: 1.2; height: 2.4em; overflow: hidden; color: #e3e7f0; }
-        .card-meta { display: flex; justify-content: space-between; font-size: 0.55rem; color: #9daec6; font-weight: bold; }
-
-        .pass-btn {
-            background: #2c3040;
-            color: #fff;
-            border: 1px solid #3d4566;
-            padding: 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .end-trigger-btn {
-            background: linear-gradient(135deg, #8a1f11, #b82e14);
-            color: #fff;
-            border: 2px solid #ff6b6b;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .forecast-panel {
-            background: #12141c;
-            border: 1px dashed #3d4566;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 0.85rem;
-            margin-top: 8px;
-        }
-
-        #result-text {
-            font-size: 0.95rem;
-            white-space: pre-wrap;
-            margin-bottom: 10px; /* ボタンのために少し調整 */
+            margin-bottom: 10px;
             flex: 1;
             background: #07080c;
             padding: 15px;
@@ -790,24 +376,20 @@
 
     <div id="screen-select" class="screen active">
         <h1>闘技場のコスプレイヤー</h1>
-        <div class="world-desc">
-            <strong>【世界観】</strong><br>
-            拉致された数百名の人質を救うため、逃げ場のない歪んだ熱狂に包まれた黒妖会の地下闘技場へ赴くコスプレイヤー。観客席の人質たちは純粋な応援だけでなく、彼女たちが蹂躙され悲鳴を上げる醜態をも期待して凝視している……。
-        </div>
 
         <div class="select-box">
             <h3>1. 操作陣営を選択</h3>
-            <button class="btn btn-heroine" onclick="selectSide('heroine')">雲霄の掌門・儀玄 (Osias cosplayモデル)</button>
+            <button class="btn btn-heroine" onclick="selectSide('heroine')">雲霄の掌門・儀玄</button>
             <button class="btn btn-enemy" onclick="selectSide('enemy')">黒妖会門番：オーク・ガイスト</button>
         </div>
 
         <div id="forecast-area" style="display:none;">
             <div class="char-preview-container">
-                <img src="[https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000](https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000)" alt="儀玄 ビジュアル" class="preview-img">
+                <img id="select-preview-img" src="" alt="儀玄 ビジュアル" class="preview-img">
             </div>
             <div class="select-box">
                 <h3>2. 試合展開予想 & 難易度</h3>
-                <div>選択側難易度: <span id="difficulty-output"></span></div>
+                <div style="margin-bottom: 4px;">選択側難易度: <span id="difficulty-output"></span></div>
                 <div class="forecast-panel" id="forecast-text"></div>
                 <button class="btn btn-start" onclick="startBattle()">闘技場へ入場する</button>
             </div>
@@ -817,7 +399,7 @@
     <div id="screen-battle" class="screen">
         <div id="battle-visual-area">
             <div id="mud-overlay"></div>
-            <img id="heroine-visual" src="[https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000](https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000)" alt="儀玄 立ち絵" class="battle-char-img">
+            <img id="heroine-visual" src="" alt="儀玄 立ち絵" class="battle-char-img">
         </div>
 
         <div class="filter-control-panel" id="filter-panel-area" style="display: none;">
@@ -882,21 +464,20 @@
     <div id="result-screen" class="screen">
         <h1 id="result-title">戦闘結末</h1>
         <div id="result-text"></div>
-        <button id="copy-log-btn" class="btn" style="background: #3d4566; display: none; margin-bottom: 10px;" onclick="copyLog()">戦闘ログをコピー</button>
+        
+        <button id="copy-log-btn" class="btn btn-copy" onclick="copyLog()">戦闘ログをコピー</button>
         <button class="btn btn-start" onclick="location.reload()">タイトルへ戻る</button>
     </div>
 
 </div>
 
 <script>
-// 儀玄の全4ポーズの画像プールを設定
-// 【重要】提供されたURLが機能するため、一時的にすべて同じURLにしています。
-// 異なるポーズを表示させるには、2枚目以降をご自身で実際の画像URLに書き換えてください。
+// 【画像パス設定】お手持ちの4枚の画像ファイル名に合わせて、ここを書き換えてください。
 const heroineImages = [
-    "[https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000](https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000)",
-    "[https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000](https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000)", // ポーズ2に書き換え
-    "[https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000](https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000)", // ポーズ3に書き換え
-    "[https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000](https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000)"  // ポーズ4に書き換え
+    "image.png",   // 1枚目の画像
+    "image2.png",  // 2枚目の画像
+    "image3.png",  // 3枚目の画像
+    "image4.png"   // 4枚目の画像
 ];
 
 const initialData = {
@@ -922,7 +503,7 @@ const initialData = {
             { id: "s2", name: "青溟爆震", power: 110, hit: 100, desc: "青溟の翼で大爆発。使用後大きな反動", isSpecial: true, isUltimate: true }
         ],
         dialogue: {
-            intro: { outer: "「これより黒妖会の悪業を断つ。雲霄の術式、その身に刻むが良い」", inner: "（Osiasの極上衣装が放つ術の循環は完璧……。だが、観客たちのあの劣情混じりの視線、不快極まりないな……）" }
+            intro: { outer: "「これより黒妖会の悪業を断つ。雲霄の術式、その身に刻むが良い」", inner: "（この衣装が放つ術の循環は完璧……。だが、観客たちのあの劣情混じりの視線、不快極まりないな……）" }
         }
     },
     enemy: {
@@ -967,21 +548,28 @@ function selectSide(side) {
     enemy = JSON.parse(JSON.stringify(initialData.enemy));
 
     document.getElementById('forecast-area').style.display = 'block';
+    
+    // 選択画面のプレビュー画像を配列の1枚目に自動設定
+    document.getElementById('select-preview-img').src = heroineImages[0];
+    
     const diffBadge = document.getElementById('difficulty-output');
     const forecastText = document.getElementById('forecast-text');
 
     if (side === 'heroine') {
-        diffBadge.innerHTML = `<span class="difficulty-badge diff-NORMAL">NORMAL</span>`;
+        diffBadge.innerHTML = `<span style="background:#30d158; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">NORMAL</span>`;
         forecastText.innerText = "儀玄は高いATKと強力な通常技を持つ。最大の武器は「回避時に確定で次ターンを強奪する」特殊戦法。玄墨陣法で回避を高め、ヒット＆アウェイを狙うのが基本戦略となる。ただし、オークの酸性汚泥やタール攻撃を喰らうと、弱点『俗世の穢れ』が発動し、攻守が恒久的に致命的弱体化を遂げるため絶対の警戒が必要。";
     } else {
-        diffBadge.innerHTML = `<span class="difficulty-badge diff-HARD">HARD</span>`;
-        forecastText.innerText = "儀玄の圧倒的な技のキレと、回避からの手番強奪ループは脅威そのもの。通常速度では捕らえにくいため、泥や酸性の粘液を伴う技（弱点属性）をいかに命中させるかが鍵。一度でも道士服を汚染すれば恒久デバフにより一気に形形逆転、彼女のプライドを地下の泥に叩き落とせる。";
+        diffBadge.innerHTML = `<span style="background:#ff453a; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">HARD</span>`;
+        forecastText.innerText = "儀玄の圧倒的な技のキレと、回避からの手番強奪ループは脅威そのもの。通常速度では捕らえにくいため、泥や酸性の粘液を伴う技（弱点属性）をいかに命中させるかが鍵。一度でも道士服を汚染すれば恒久デバフにより一気に戦況逆転、彼女のプライドを地下の泥に叩き落とせる。";
     }
 }
 
 function startBattle() {
     document.getElementById('screen-select').classList.remove('active');
     document.getElementById('screen-battle').classList.add('active');
+
+    // 初期立ち絵を設定
+    document.getElementById('heroine-visual').src = heroineImages[0];
 
     for(let i=0; i<3; i++) {
         drawCard(heroine, 'normal');
@@ -1063,7 +651,7 @@ function nextTurnLoop() {
     const activeChar = activeSide === 'heroine' ? heroine : enemy;
     
     if (activeSide === 'heroine') {
-        // ★ 儀玄のターンごとに、4枚の画像からランダムで上書き
+        // 儀玄のターンごとに、登録されたポーズ画像プールからランダムで表示変更
         const randomImg = heroineImages[Math.floor(Math.random() * heroineImages.length)];
         document.getElementById('heroine-visual').src = randomImg;
 
@@ -1208,7 +796,7 @@ function executeCardEffect(attackerSide, card) {
         if (card.isWeaknessStriker) {
             heroine.current.isPolluted = true;
             heroine.current.state = "屈辱";
-            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の撒き散らした酸性汚泥・タールが黄色い道士服と符籙を無残に汚染！ 透徹力の循環が完全崩壊し、ATK and DEFが恒久的に-25された！</span>`, 'warning');
+            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の撒き散らした酸性汚泥・タールが道士服と符籙を無残に汚染！ 術の循環が完全崩壊し、ATKとDEFが恒久的に-25された！</span>`, 'warning');
             log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
         }
     } else {
@@ -1278,7 +866,6 @@ function toggleFilter() {
     updateUI();
 }
 
-/* 手札の表示ON / OFF切り替えシステム */
 function toggleHand() {
     isHandVisible = !isHandVisible;
     const container = document.getElementById('hand-container');
@@ -1310,17 +897,10 @@ function showEndingButton() {
     document.getElementById('battle-controls').style.display = 'none';
     document.getElementById('turn-indicator').innerText = "試合終了";
     document.getElementById('end-trigger').style.display = 'block';
-    
-    // 戦闘ログコピーボタンを表示
-    document.getElementById('copy-log-btn').style.display = 'block';
-    
     document.getElementById('command-area').style.pointerEvents = 'auto';
 }
 
 function goToEnding() {
-    // リザルト画面に移行するとき、コピーボタンは一旦隠す（タイトルへ戻るボタンなどがあるため）
-    document.getElementById('copy-log-btn').style.display = 'none';
-    
     document.getElementById('screen-battle').classList.remove('active');
     document.getElementById('result-screen').classList.add('active');
 
@@ -1338,32 +918,23 @@ function goToEnding() {
     }
 }
 
-/**
- * 戦闘ログをまとめてクリップボードにコピーする関数
- */
 function copyLog() {
     const logArea = document.getElementById('log-area');
     const entries = logArea.querySelectorAll('.log-entry');
     let fullLogText = "";
 
-    // 全ログエントリのテキストを結合
     entries.forEach(entry => {
-        // HTMLタグを除外したテキストのみを取得し、改行を加える
         fullLogText += entry.innerText + "\n";
     });
 
-    // クリップボードに書き込み
     if (fullLogText) {
         navigator.clipboard.writeText(fullLogText).then(() => {
-            // コピー成功時に簡単な通知（ログエリアに追加）
-            log(`<strong>📋 戦闘ログをクリップボードにコピーしました。</strong>`, 'system');
+            alert("戦闘ログをクリップボードにコピーしました！");
         }).catch(err => {
-            // エラーハンドリング
-            log(`<strong>❌ ログのコピーに失敗しました。: ${err}</strong>`, 'warning');
-            alert("ログのコピーに失敗しました。ブラウザの設定を確認してください。");
+            alert("ログのコピーに失敗しました。お使いのブラウザの権限設定を確認してください。");
         });
     } else {
-        log(`<strong>⚠️ コピーするログがありません。</strong>`, 'warning');
+        alert("コピーするログがありません。");
     }
 }
 

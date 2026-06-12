@@ -87,7 +87,6 @@
             border: 1px solid #252a3a;
         }
 
-        /* キャラクタープレビュー画像 */
         .char-preview-container {
             text-align: center;
             margin: 10px 0;
@@ -101,14 +100,14 @@
             background: #000;
         }
 
-        /* バトル画面用ビジュアル枠 */
+        /* ログエリア拡大のため、ビジュアル枠の縦幅をコンパクト(220px→135px)に調整 */
         #battle-visual-area {
             width: 100%;
-            height: 220px;
+            height: 135px;
             background: linear-gradient(180deg, #101424 0%, #07080c 100%);
             border: 1px solid #222530;
             border-radius: 8px;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             position: relative;
             display: flex;
             justify-content: center;
@@ -120,21 +119,21 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 40px;
+            height: 30px;
             background: linear-gradient(to top, #07080c, transparent);
             z-index: 2;
         }
         .battle-char-img {
-            height: 105%;
+            height: 140%;
             width: auto;
             object-fit: contain;
             position: relative;
-            bottom: -5px;
+            bottom: -15px;
             z-index: 1;
             transition: transform 0.4s ease, filter 0.5s ease;
         }
 
-        /* リアルな泥・タール付着レイヤー (mix-blend-modeでブレンド) */
+        /* 泥・タールレイヤー */
         #mud-overlay {
             position: absolute;
             top: 0;
@@ -152,7 +151,6 @@
             transition: opacity 0.5s ease;
         }
 
-        /* 汚染時の画像本体のフィルター */
         .battle-char-img.polluted-filter {
             filter: sepia(45%) contrast(110%) brightness(50%) saturate(70%);
             transform: scale(0.97);
@@ -165,20 +163,19 @@
             box-shadow: inset 0 0 30px rgba(58,150,255,0.4);
         }
 
-        /* フィルターON/OFFコントロールパネル */
         .filter-control-panel {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             padding: 0 2px;
         }
         .toggle-btn {
             background: #1c1f2b;
             color: #8892b0;
             border: 1px solid #3d4566;
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.2s;
@@ -190,23 +187,22 @@
             box-shadow: 0 0 8px rgba(173,107,59,0.3);
         }
 
-        /* テキスト表示欄の見やすさ大幅強化 */
+        /* テキスト表示欄（ログエリア）の超拡大化 */
         #log-area {
-            flex: 1;
+            flex: 1; /* 残りのスペースをすべて吸い上げて最大化 */
             overflow-y: auto;
             padding: 12px;
             background: #090a0f;
             border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-size: 0.95rem; /* 文字を少し大きく */
             border: 1px solid #202433;
             display: flex;
             flex-direction: column;
         }
 
-        /* 各ログエントリを独立した見え方にデザイン */
         .log-entry {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             padding: 10px 12px;
             border-radius: 6px;
             line-height: 1.5;
@@ -215,21 +211,9 @@
             border-left: 3px solid #3d4566;
         }
 
-        /* ログの種類ごとの明確な色分け */
-        .log-system { 
-            background: rgba(48, 209, 88, 0.06); 
-            border-left-color: #30d158; 
-            color: #5af283; 
-            font-weight: bold;
-            font-size: 0.85rem;
-        }
-        .log-text { 
-            color: var(--text-color); 
-        }
-        .log-heroine-outer { 
-            color: #66aeff; 
-            font-weight: bold; 
-        }
+        .log-system { background: rgba(48, 209, 88, 0.06); border-left-color: #30d158; color: #5af283; font-weight: bold; font-size: 0.85rem;}
+        .log-text { color: var(--text-color); }
+        .log-heroine-outer { color: #66aeff; font-weight: bold; }
         .log-heroine-inner { 
             color: var(--text-inner); 
             font-style: italic; 
@@ -238,29 +222,15 @@
             padding-left: 8px;
             border-left: 1px dashed #556278;
         }
-        .log-enemy-speech { 
-            background: rgba(255, 69, 58, 0.05);
-            border-left-color: var(--accent-enemy);
-            color: #ff766f; 
-            font-weight: bold; 
-        }
-        .log-spectator { 
-            background: rgba(255, 214, 10, 0.05); 
-            border-left-color: var(--text-spectator);
-            color: #ffe14d;
-        }
-        .log-warning { 
-            background: rgba(255, 149, 0, 0.08);
-            border-left-color: #ff9500;
-            color: #ffb340; 
-            font-weight: bold; 
-        }
+        .log-enemy-speech { background: rgba(255, 69, 58, 0.05); border-left-color: var(--accent-enemy); color: #ff766f; font-weight: bold; }
+        .log-spectator { background: rgba(255, 214, 10, 0.05); border-left-color: var(--text-spectator); color: #ffe14d;}
+        .log-warning { background: rgba(255, 149, 0, 0.08); border-left-color: #ff9500; color: #ffb340; font-weight: bold; }
 
         #status-area {
             background: var(--panel-bg);
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-size: 0.85rem;
             border: 1px solid #252a3a;
         }
@@ -269,11 +239,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
         .gauge-container {
-            width: 60%;
             background: #222533;
             height: 12px;
             border-radius: 6px;
@@ -288,10 +257,11 @@
         .gauge-text { position: absolute; width: 100%; text-align: center; font-size: 9px; line-height: 12px; color: #fff; font-weight: bold; }
 
         .mental-tag {
-            padding: 1px 6px;
+            padding: 1px 5px;
             border-radius: 3px;
             font-weight: bold;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
+            text-align: center;
         }
         .m-通常 { background: #636e72; color: #fff; }
         .m-昂揚 { background: #0984e3; color: #fff; box-shadow: 0 0 6px var(--accent-heroine); }
@@ -305,17 +275,16 @@
             font-size: 10px;
             padding: 1px 5px;
             border-radius: 3px;
-            margin-left: 4px;
             font-weight: bold;
         }
 
         #command-area {
             background: #151821;
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             border: 1px solid #252a3a;
         }
 
@@ -323,17 +292,17 @@
             display: flex;
             gap: 6px;
             overflow-x: auto;
-            padding-bottom: 5px;
-            height: 95px;
+            padding-bottom: 4px;
+            height: 92px;
         }
 
         .card {
-            flex: 0 0 90px;
-            height: 85px;
+            flex: 0 0 92px;
+            height: 82px;
             background: #222636;
             border: 1px solid #3d4566;
             border-radius: 6px;
-            padding: 6px;
+            padding: 5px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -352,26 +321,27 @@
             background: #2d3142 !important;
         }
         .card-name { font-weight: bold; line-height: 1.2; height: 2.4em; overflow: hidden; color: #e3e7f0; }
-        .card-meta { display: flex; justify-content: space-between; font-size: 0.65rem; color: #9daec6; }
+        
+        /* チャージ(C)追加に伴うメタデータのフォントサイズ微調整 */
+        .card-meta { display: flex; justify-content: space-between; font-size: 0.6rem; color: #9daec6; font-weight: bold; }
 
         .pass-btn {
             background: #2c3040;
             color: #fff;
             border: 1px solid #3d4566;
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: bold;
         }
 
-        /* 終了確認用大ボタン */
         .end-trigger-btn {
             background: linear-gradient(135deg, #8a1f11, #b82e14);
             color: #fff;
             border: 2px solid #ff6b6b;
-            padding: 15px;
+            padding: 12px;
             border-radius: 6px;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: bold;
             text-align: center;
             cursor: pointer;
@@ -410,6 +380,7 @@
 
 <div id="game-container">
 
+    <!-- フェーズ1：キャラクター選択画面 -->
     <div id="screen-select" class="screen active">
         <h1>闘技場のコスプレイヤー</h1>
         <div class="world-desc">
@@ -436,6 +407,7 @@
         </div>
     </div>
 
+    <!-- フェーズ2：バトル画面 -->
     <div id="screen-battle" class="screen">
         <div id="battle-visual-area">
             <div id="mud-overlay"></div>
@@ -446,29 +418,43 @@
             <button id="filter-toggle-btn" class="toggle-btn active" onclick="toggleFilter()">汚染フィルター: ON</button>
         </div>
 
+        <!-- 視認性を劇的に向上させた超拡大ログエリア -->
         <div id="log-area"></div>
 
+        <!-- ステータス表示（レイアウトを完全に統一し、儀玄側にもチャージを搭載） -->
         <div id="status-area">
+            <div id="polluted-marker-line" style="margin-bottom: 4px; text-align: right; height: 16px; display: none;">
+                <span id="polluted-marker"></span>
+            </div>
+            
+            <!-- 儀玄ステータス -->
             <div class="status-row">
-                <span style="color:var(--accent-heroine); font-weight:bold;">儀玄 <span id="polluted-marker"></span></span>
-                <span id="heroine-mental" class="mental-tag m-通常">通常</span>
-                <div class="gauge-container">
+                <span style="color:var(--accent-heroine); font-weight:bold; width: 45px;">儀玄</span>
+                <span id="heroine-mental" class="mental-tag m-通常" style="width: 32px;">通常</span>
+                <div class="gauge-container" style="width: 45%;">
                     <div id="heroine-hp-bar" class="gauge-bar hp-bar-heroine" style="width: 100%;"></div>
-                    <div id="heroine-hp-text" class="gauge-text">HP: 500 / 500</div>
+                    <div id="heroine-hp-text" class="gauge-text">HP: 500</div>
+                </div>
+                <!-- 新設されたヒロインチャージゲージ -->
+                <div class="gauge-container" style="width: 22%;">
+                    <div id="heroine-charge-bar" class="gauge-bar charge-bar" style="width: 0%;"></div>
+                    <div id="heroine-charge-text" class="gauge-text">CHG: 0</div>
                 </div>
             </div>
-            <div class="status-row" style="margin-bottom: 10px; font-size: 0.75rem; color:#8892b0;">
+            <div class="status-row" style="margin-bottom: 8px; font-size: 0.75rem; color:#8892b0;">
                 <span>SPD: <span id="h-spd">70</span> / IQ: <span id="h-int">60</span> / ATK: <span id="h-atk">75</span> / DEF: <span id="h-def">65</span></span>
                 <span>倍率速度: <span id="h-speed-val">-</span></span>
             </div>
 
+            <!-- オークステータス -->
             <div class="status-row">
-                <span style="color:#ff6b6b; font-weight:bold;">オーク</span>
-                <div class="gauge-container" style="width: 40%;">
+                <span style="color:#ff6b6b; font-weight:bold; width: 45px;">オーク</span>
+                <span style="width: 32px;"></span> <!-- レイアウト固定用の空白 -->
+                <div class="gauge-container" style="width: 45%;">
                     <div id="enemy-hp-bar" class="gauge-bar hp-bar-enemy" style="width: 100%;"></div>
-                    <div id="enemy-hp-text" class="gauge-text">HP: 500 / 500</div>
+                    <div id="enemy-hp-text" class="gauge-text">HP: 500</div>
                 </div>
-                <div class="gauge-container" style="width: 20%;">
+                <div class="gauge-container" style="width: 22%;">
                     <div id="enemy-charge-bar" class="gauge-bar charge-bar" style="width: 0%;"></div>
                     <div id="enemy-charge-text" class="gauge-text">CHG: 0</div>
                 </div>
@@ -479,6 +465,7 @@
             </div>
         </div>
 
+        <!-- コマンド＆手札 -->
         <div id="command-area">
             <div style="font-size:0.8rem; font-weight:bold; color:#a8b2d1;" id="turn-indicator">あなたのターン</div>
             <div id="battle-controls">
@@ -489,6 +476,7 @@
         </div>
     </div>
 
+    <!-- フェーズ3：結慢画面 -->
     <div id="result-screen" class="screen">
         <h1 id="result-title">戦闘結末</h1>
         <div id="result-text"></div>
@@ -498,7 +486,6 @@
 </div>
 
 <script>
-// --- データ定義 ---
 const initialData = {
     heroine: {
         name: "儀玄",
@@ -548,7 +535,7 @@ const initialData = {
 
 const spectatorsPool = [
     "「おいおい、あの儀玄の道士服、スリットから見える脚がエロすぎるだろ！」",
-    "「掌門様が泥にまみれて泣き叫ぶ姿を早く見せてくれオーク！」",
+    "「掌門様が泥にままれて泣き叫ぶ姿を早く見せてくれオーク！」",
     "「おい、服を汚せ！ 術を封じてあのプライドをへし折っちまえ！」",
     "「凛としたコスプレイヤーが絶望に染まる瞬間こそ、この闘技場の極上のお馳走だ！」"
 ];
@@ -557,8 +544,8 @@ let playerSide = 'heroine';
 let heroine, enemy;
 let isGameOver = false;
 let forceNextTurnSide = null;
-let isFilterEnabled = true; // フィルターのON/OFF状態管理
-let finalMatchResult = '';  // 結末保存用
+let isFilterEnabled = true;
+let finalMatchResult = '';
 
 function selectSide(side) {
     playerSide = side;
@@ -605,7 +592,6 @@ function drawCard(char, type) {
 
 function getModifiedStats(char, isHeroine) {
     let mod = { atk: char.stats.atk, def: char.stats.def, spd: char.stats.spd, int: char.stats.int };
-    
     if (!isHeroine) return mod;
 
     if (char.current.isPolluted) {
@@ -638,7 +624,6 @@ function nextTurnLoop() {
     if (isGameOver) return;
 
     updateUI();
-
     let activeSide = '';
 
     if (heroine.current.stunnedTurns > 0) {
@@ -862,7 +847,6 @@ function updateMentalStateBeforeTurn() {
     }
 }
 
-// フィルターON/OFFの切り替えロジック
 function toggleFilter() {
     isFilterEnabled = !isFilterEnabled;
     const btn = document.getElementById('filter-toggle-btn');
@@ -889,11 +873,8 @@ function checkDeath() {
     }
 }
 
-// すぐ結果画面に行かず、ボタンを出現させる
 function showEndingButton() {
     log(`<strong>☠️ 決着 ☠️ 闘技場の試合終了。勝敗が決しました。</strong>`, 'warning');
-    
-    // 通常の操作盤を非表示にし、エンディングを見るボタンを表示
     document.getElementById('battle-controls').style.display = 'none';
     document.getElementById('turn-indicator').innerText = "試合終了";
     document.getElementById('end-trigger').style.display = 'block';
@@ -919,12 +900,15 @@ function goToEnding() {
 }
 
 function updateUI() {
+    // 儀玄HP・チャージ更新
     document.getElementById('heroine-hp-bar').style.width = `${(heroine.current.hp / 500) * 100}%`;
-    document.getElementById('heroine-hp-text').innerText = `HP: ${heroine.current.hp} / 500`;
+    document.getElementById('heroine-hp-text').innerText = `HP: ${heroine.current.hp}`;
+    document.getElementById('heroine-charge-bar').style.width = `${Math.min(heroine.current.chargeValue, 100)}%`;
+    document.getElementById('heroine-charge-text').innerText = `CHG: ${heroine.current.chargeValue}`;
 
+    // オークHP・チャージ更新
     document.getElementById('enemy-hp-bar').style.width = `${(enemy.current.hp / 500) * 100}%`;
-    document.getElementById('enemy-hp-text').innerText = `HP: ${enemy.current.hp} / 500`;
-
+    document.getElementById('enemy-hp-text').innerText = `HP: ${enemy.current.hp}`;
     document.getElementById('enemy-charge-bar').style.width = `${Math.min(enemy.current.chargeValue, 100)}%`;
     document.getElementById('enemy-charge-text').innerText = `CHG: ${enemy.current.chargeValue}`;
 
@@ -936,13 +920,14 @@ function updateUI() {
     const vArea = document.getElementById('battle-visual-area');
     const mud = document.getElementById('mud-overlay');
     const fPanel = document.getElementById('filter-panel-area');
+    const pollMarkerLine = document.getElementById('polluted-marker-line');
     const pollMarker = document.getElementById('polluted-marker');
 
     if (heroine.current.isPolluted) {
-        pollMarker.innerHTML = `<span class="debuff-badge">衣服汚染</span>`;
-        fPanel.style.display = 'flex'; // 汚染されたらトグルスイッチを露出
+        pollMarker.innerHTML = `<span class="debuff-badge">⚠️ 衣服・術式汚染（ステータス恒久低下中）</span>`;
+        pollMarkerLine.style.display = 'block';
+        fPanel.style.display = 'flex';
 
-        // フィルター設定がONの時のみリアル泥レイヤーと画像暗濁化を適用
         if (isFilterEnabled) {
             vImg.classList.add('polluted-filter');         
             vArea.classList.add('polluted-bg');      
@@ -954,6 +939,7 @@ function updateUI() {
         }
     } else {
         pollMarker.innerHTML = '';
+        pollMarkerLine.style.display = 'none';
         fPanel.style.display = 'none';
         vImg.classList.remove('polluted-filter');         
         vArea.classList.remove('polluted-bg');      
@@ -982,12 +968,15 @@ function renderHand(char) {
 
         const cardEl = document.createElement('div');
         cardEl.className = `card ${card.isSpecial ? 'special' : ''} ${is陣法Disabled ? 'disabled' : ''}`;
+        
+        // メタデータ部分にチャージ値（C）を追加
         cardEl.innerHTML = `
             <div class="card-name">${card.name}</div>
             <div style="font-size:10px; color:#8892b0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${card.desc}</div>
             <div class="card-meta">
                 <span>P:${card.power}</span>
                 <span>H:${card.hit}</span>
+                <span>C:${card.charge !== undefined ? card.charge : '-'}</span>
             </div>
         `;
         if (!is陣法Disabled) {
@@ -997,14 +986,11 @@ function renderHand(char) {
     });
 }
 
-// ログ出力（自動スクロールを廃止し、最新のログを『一番上』に挿入するように変更）
 function log(text, type) {
     const logArea = document.getElementById('log-area');
     const entry = document.createElement('div');
     entry.className = `log-entry log-${type}`;
     entry.innerHTML = text;
-    
-    // 最新ログを最上部に挿入
     logArea.insertBefore(entry, logArea.firstChild);
 }
 </script>

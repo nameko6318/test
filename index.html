@@ -100,6 +100,8 @@
         .btn-start { background: #30d158; }
         .btn-copy { background: #3d4566; border: 1px solid #5a6594; }
         .btn-copy:active { background: #2b314a; }
+        .btn-copy-filtered { background: #8e44ad; border: 1px solid #a55cca; }
+        .btn-copy-filtered:active { background: #732d91; }
 
         .char-preview-container {
             text-align: center;
@@ -107,7 +109,8 @@
         }
         .preview-img {
             width: 140px;
-            height: auto;
+            height: 180px;
+            object-fit: contain;
             border-radius: 8px;
             border: 2px solid var(--accent-heroine);
             background: #000;
@@ -378,6 +381,12 @@
         <h1>闘技場のコスプレイヤー</h1>
 
         <div class="select-box">
+            <h3 style="color:#ffd60a;">📷 【必須】手持ちの画像を4枚選ぶ</h3>
+            <p style="font-size:0.7rem; color:#8892b0; margin-bottom:6px;">タップして画像（立ち絵用）を4枚同時に選択してください。ファイル名が違っても確実に表示されるようになります。</p>
+            <input type="file" id="image-uploader" multiple accept="image/*" onchange="loadUserImages(event)">
+        </div>
+
+        <div class="select-box">
             <h3>1. 操作陣営を選択</h3>
             <button class="btn btn-heroine" onclick="selectSide('heroine')">雲霄の掌門・儀玄</button>
             <button class="btn btn-enemy" onclick="selectSide('enemy')">黒妖会門番：オーク・ガイスト</button>
@@ -465,20 +474,39 @@
         <h1 id="result-title">戦闘結末</h1>
         <div id="result-text"></div>
         
-        <button id="copy-log-btn" class="btn btn-copy" onclick="copyLog()">戦闘ログをコピー</button>
+        <button id="copy-filtered-log-btn" class="btn btn-copy-filtered" onclick="copyFilteredLog()">ヒロイン・悪役の行動ログのみコピー</button>
+        <button id="copy-log-btn" class="btn btn-copy" onclick="copyLog()">全戦闘ログをコピー（観客ヤジ等含む）</button>
         <button class="btn btn-start" onclick="location.reload()">タイトルへ戻る</button>
     </div>
 
 </div>
 
 <script>
-// 【画像パス設定】お手持ちの4枚の画像ファイル名に合わせて、ここを書き換えてください。
-const heroineImages = [
-    "image.png",   // 1枚目の画像
-    "image2.png",  // 2枚目の画像
-    "image3.png",  // 3枚目の画像
-    "image4.png"   // 4枚目の画像
-];
+// 画像未選択時のための初期ダミー画像（Base64 SVG）
+const dummyImage = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='180'><rect width='140' height='180' fill='%23222530'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%235a6594' font-size='11'>画像未読込</text></svg>";
+
+// この配列にユーザーが選んだ画像URLが動的に格納されます
+let heroineImages = [dummyImage, dummyImage, dummyImage, dummyImage];
+
+function loadUserImages(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    heroineImages = [];
+    // 最大4枚まで読み込み、URLオブジェクトを生成して格納
+    for (let i = 0; i < Math.min(files.length, 4); i++) {
+        heroineImages.push(URL.createObjectURL(files[i]));
+    }
+
+    // もし選択された画像が4枚未満なら、ある分をループさせて4枚の枠を埋める
+    while (heroineImages.length < 4 && heroineImages.length > 0) {
+        heroineImages.push(heroineImages[0]);
+    }
+
+    // プレビュー画像を更新
+    document.getElementById('select-preview-img').src = heroineImages[0];
+    alert(files.length + "枚の画像を認識しました！次のステップに進んでください。");
+}
 
 const initialData = {
     heroine: {
@@ -548,8 +576,6 @@ function selectSide(side) {
     enemy = JSON.parse(JSON.stringify(initialData.enemy));
 
     document.getElementById('forecast-area').style.display = 'block';
-    
-    // 選択画面のプレビュー画像を配列の1枚目に自動設定
     document.getElementById('select-preview-img').src = heroineImages[0];
     
     const diffBadge = document.getElementById('difficulty-output');
@@ -568,7 +594,6 @@ function startBattle() {
     document.getElementById('screen-select').classList.remove('active');
     document.getElementById('screen-battle').classList.add('active');
 
-    // 初期立ち絵を設定
     document.getElementById('heroine-visual').src = heroineImages[0];
 
     for(let i=0; i<3; i++) {
@@ -578,8 +603,8 @@ function startBattle() {
 
     log(`<strong>◆ 闘技場バトル開幕 ◆</strong>`, 'system');
     log(`青黒いエーテルエネルギーの残滓と、人質たちの歪んだ欲望が混ざり合う地下闘技場。`, 'text');
-    log(`儀玄: <span class="log-heroine-outer">${heroine.dialogue.intro.outer}</span>`, 'text');
-    log(`儀玄: <span class="log-heroine-inner">${heroine.dialogue.intro.inner}</span>`, 'text');
+    log(`儀玄: <span class="log-heroine-outer">${heroine.dialogue.intro.outer}</span>`, 'heroine-outer');
+    log(`儀玄: <span class="log-heroine-inner">${heroine.dialogue.intro.inner}</span>`, 'heroine-inner');
     log(`オーク: 「${enemy.dialogue.intro}」`, 'enemy-speech');
 
     nextTurnLoop();
@@ -651,7 +676,6 @@ function nextTurnLoop() {
     const activeChar = activeSide === 'heroine' ? heroine : enemy;
     
     if (activeSide === 'heroine') {
-        // 儀玄のターンごとに、登録されたポーズ画像プールからランダムで表示変更
         const randomImg = heroineImages[Math.floor(Math.random() * heroineImages.length)];
         document.getElementById('heroine-visual').src = randomImg;
 
@@ -797,7 +821,7 @@ function executeCardEffect(attackerSide, card) {
             heroine.current.isPolluted = true;
             heroine.current.state = "屈辱";
             log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の撒き散らした酸性汚泥・タールが道士服と符籙を無残に汚染！ 術の循環が完全崩壊し、ATKとDEFが恒久的に-25された！</span>`, 'warning');
-            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
+            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'heroine-inner');
         }
     } else {
         if (card.isUltimate) {
@@ -918,6 +942,33 @@ function goToEnding() {
     }
 }
 
+// ヒロインと悪役の純粋な行動・セリフログだけをコピーする関数
+function copyFilteredLog() {
+    const logArea = document.getElementById('log-area');
+    const entries = logArea.querySelectorAll('.log-entry');
+    let filteredLogText = "";
+
+    entries.forEach(entry => {
+        // システム文、観客のヤジ、システム警告文を除外する
+        if (entry.classList.contains('log-system') || 
+            entry.classList.contains('log-spectator') || 
+            entry.classList.contains('log-warning')) {
+            return;
+        }
+        filteredLogText += entry.innerText + "\n";
+    });
+
+    if (filteredLogText.trim()) {
+        navigator.clipboard.writeText(filteredLogText).then(() => {
+            alert("ヒロインと悪役の【行動・セリフのみ】をクリップボードにコピーしました！");
+        }).catch(err => {
+            alert("ログのコピーに失敗しました。お使いのブラウザの権限設定を確認してください。");
+        });
+    } else {
+        alert("コピーするキャラクターログがありません。");
+    }
+}
+
 function copyLog() {
     const logArea = document.getElementById('log-area');
     const entries = logArea.querySelectorAll('.log-entry');
@@ -929,9 +980,9 @@ function copyLog() {
 
     if (fullLogText) {
         navigator.clipboard.writeText(fullLogText).then(() => {
-            alert("戦闘ログをクリップボードにコピーしました！");
+            alert("すべての戦闘ログをクリップボードにコピーしました！");
         }).catch(err => {
-            alert("ログのコピーに失敗しました。お使いのブラウザの権限設定を確認してください。");
+            alert("ログのコピーに失敗しました。");
         });
     } else {
         alert("コピーするログがありません。");

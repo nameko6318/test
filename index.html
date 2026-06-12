@@ -71,7 +71,7 @@
             display: none;
             flex-direction: column;
             overflow: hidden;
-            position: relative; /* ボタンの絶対配置基準 */
+            position: relative; 
         }
         #screen-battle.active {
             display: flex;
@@ -111,6 +111,8 @@
         .btn-start { background: #30d158; }
         .btn-copy { background: #3d4566; border: 1px solid #5a6594; }
         .btn-copy:active { background: #2b314a; }
+        .btn-copy-filtered { background: #8e44ad; border: 1px solid #a55cca; }
+        .btn-copy-filtered:active { background: #732d91; }
 
         .char-preview-container {
             text-align: center;
@@ -144,7 +146,7 @@
             width: 45%;
             height: 100%;
             display: flex;
-            justify-content: center;
+            justify( center;
             align-items: center;
             position: relative;
             overflow: visible;
@@ -159,7 +161,7 @@
             transition: transform 0.4s ease, filter 0.3s ease;
         }
 
-        /* 汚染タールスポット（キャラクターを隠さないよう透過閾値を厳格化） */
+        /* 汚染タールスポット (キャラクターがはっきり見えるよう、シミを薄く透過) */
         .mud-overlay {
             position: absolute;
             top: 0;
@@ -173,21 +175,28 @@
             background-repeat: no-repeat;
         }
 
-        /* キャラクターが見えるよう、シミの箇所以外は完全な透明(transparent)に */
+        /* べっとりと付着した、飛び散ったタールの生々しいスポット表現 */
+        /* シミの箇所のみ色が乗り、それ以外は完全な透明(transparent)にすることで、キャラクターを暗く塗りつぶさずに表示 */
         .mud-overlay.active {
             opacity: 1;
             background-image:
-                radial-gradient(circle at 35% 30%, #150f0a 0%, #20160e 55%, transparent 60%),
-                radial-gradient(circle at 42% 35%, #0a0705 0%, #150f0a 45%, transparent 50%),
-                radial-gradient(circle at 65% 55%, #1c130d 0%, #281b12 65%, transparent 70%),
-                radial-gradient(ellipse at 25% 65%, #110c08 0%, #1c130d 50%, transparent 55%),
-                radial-gradient(circle at 70% 25%, #080503 0%, #110c08 40%, transparent 45%),
-                radial-gradient(circle at 50% 70%, #1c130d 0%, #251a10 55%, transparent 60%);
+                /* シミ1（ハードエッジで粘り気のある溜まり） */
+                radial-gradient(circle at 35% 30%, rgba(40, 25, 10, 0.4) 0%, rgba(20, 10, 5, 0.3) 55%, transparent 60%),
+                /* シミ2（薄い広がりと飛び散り） */
+                radial-gradient(circle at 65% 30%, rgba(60, 40, 20, 0.3) 0%, rgba(40, 25, 10, 0.2) 50%, transparent 70%),
+                /* シミ3（下部の大きな溜まり） */
+                radial-gradient(circle at 20% 70%, rgba(20, 10, 5, 0.5) 0%, rgba(10, 5, 2, 0.4) 55%, transparent 75%),
+                /* シミ4（小さな飛び散りスポット） */
+                radial-gradient(ellipse at 80% 80%, rgba(50, 30, 15, 0.4) 0%, rgba(30, 15, 8, 0.3) 25%, transparent 35%),
+                /* シミ5（サイドの粘り気） */
+                radial-gradient(circle at 75% 60%, rgba(35, 20, 8, 0.4) 0%, rgba(25, 12, 5, 0.3) 48%, transparent 70%),
+                /* シミ6（小さな飛び散り追加） */
+                radial-gradient(circle at 50% 70%, rgba(20, 10, 5, 0.3) 0%, rgba(10, 5, 2, 0.2) 55%, transparent 60%);
         }
 
-        /* 汚染フィルターON時のみ適用される画像調整 */
+        /* 汚染フィルターON時のヒロイン画像フィルター調整 (sepiaを弱め、暗くしない) */
         #heroine-visual-container.polluted .battle-char-img {
-            filter: sepia(35%) contrast(115%);
+            filter: sepia(30%) contrast(110%); 
         }
         
         .visual-effect-glow {
@@ -196,7 +205,7 @@
 
         .filter-control-panel {
             display: flex;
-            justify-content: flex-end;
+            justify( flex-end;
             margin-bottom: 4px;
             padding: 0 2px;
             flex-shrink: 0;
@@ -218,7 +227,7 @@
             border-color: #ad6b3b;
         }
 
-        /* スワイプ（スクロール）可能な高視認性テキストログエリア */
+        /* スワイプ可能なテキストログエリア */
         #log-area {
             flex: 1; 
             min-height: 0;
@@ -266,7 +275,7 @@
 
         .status-row {
             display: flex;
-            justify-content: space-between;
+            justify( space-between;
             align-items: center;
             margin-bottom: 3px;
         }
@@ -336,7 +345,7 @@
             padding: 4px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify( space-between;
             font-size: 0.7rem;
             cursor: pointer;
             color: #fff;
@@ -352,7 +361,7 @@
             background: #2d3142 !important;
         }
         .card-name { font-weight: bold; line-height: 1.2; height: 2.4em; overflow: hidden; color: #e3e7f0; }
-        .card-meta { display: flex; justify-content: space-between; font-size: 0.55rem; color: #9daec6; font-weight: bold; }
+        .card-meta { display: flex; justify( space-between; font-size: 0.55rem; color: #9daec6; font-weight: bold; }
 
         .pass-btn {
             background: #2c3040;
@@ -389,7 +398,7 @@
             100% { box-shadow: 0 5px 25px rgba(240, 50, 50, 0.8); }
         }
 
-        .forecast-panel {
+        forecast-panel {
             background: #12141c;
             border: 1px dashed #3d4566;
             padding: 10px;
@@ -508,7 +517,7 @@
         </div>
 
         <div id="command-area">
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size:0.75rem; font-weight:bold; color:#a8b2d1;">
+            <div style="display: flex; justify( space-between; align-items: center; font-size:0.75rem; font-weight:bold; color:#a8b2d1;">
                 <span id="turn-indicator">あなたのターン</span>
                 <button id="toggle-hand-btn" class="toggle-btn" onclick="toggleHand()">手札を隠す</button>
             </div>
@@ -524,7 +533,10 @@
     <div id="result-screen" class="screen">
         <h1 id="result-title">戦闘結末</h1>
         <div id="result-text"></div>
-        <button id="copy-log-btn" class="btn bth-copy" onclick="copyLog()">戦闘ログをコピー</button>
+        
+        <button id="copy-log-btn" class="btn btn-copy" style="display: none; margin-bottom: 10px;" onclick="copyLog()">全戦闘ログをコピー（観客ヤジ等含む）</button>
+        <button id="copy-action-log-btn" class="btn btn-copy-filtered" style="display: none; margin-bottom: 10px;" onclick="copyActionLog()">ヒロイン・悪役のアクション、ダメージだけをコピー</button>
+        
         <button class="btn btn-start" onclick="location.reload()">タイトルへ戻る</button>
     </div>
 
@@ -603,8 +615,8 @@ const initialData = {
             { id: "es2", name: "泥塗れの粘液ホールド", power: 50, hit: 90, desc: "捕らえてタールで汚染する（弱点汚染属性）", isSpecial: true, isWeaknessStriker: true }
         ],
         dialogue: {
-            intro: "「ガハハ！ 道士様の綺麗な黄色い服を、ドロドロのグチャグチャにしてやるぜぇ！」",
-            attack: ["「お高くとまってんじゃねえぞ掌門サマよォ！」", "「その綺麗な顔が歪むのが見てえんだよ！」"]
+            intro: "ガハハ！ 道士様の綺麗な黄色い服を、ドロドロのグチャグチャにしてやるぜぇ！",
+            attack: ["お高くとまってんじゃねえぞ掌門サマよォ！", "その綺麗な顔が歪むのが見てえんだよ！"]
         }
     }
 };
@@ -875,7 +887,7 @@ function executeCardEffect(attackerSide, card) {
         if (card.isWeaknessStriker) {
             heroine.current.isPolluted = true;
             heroine.current.state = "屈辱";
-            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の放った酸性汚泥・タールが黄色い道士服を無残に汚染！ 術の循環が致命的に阻害され、ATKとDEFが恒久的に-25された！</span>`, 'warning');
+            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の放った酸性汚泥・タールが黄色い道士服と符籙を無残に汚染！ 透徹力の循環が完全崩壊し、ATKとDEFが恒久的に-25された！</span>`, 'warning');
             log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
         }
     } else {
@@ -971,15 +983,27 @@ function checkDeath() {
     }
 }
 
+// 修正：結末ボタンが反応しないバグを解消するため、最前面にポップアップ配置
 function showEndingButton() {
     log(`<strong>☠️ 決着 ☠️ 闘技場の試合終了。勝敗が決しました。</strong>`, 'warning');
     document.getElementById('battle-controls').style.display = 'none';
     document.getElementById('turn-indicator').innerText = "試合終了";
-    document.getElementById('end-trigger').style.display = 'block';
+    
+    const endBtn = document.getElementById('end-trigger');
+    endBtn.style.display = 'block';
+    
+    // 結末画面のコピーボタンを表示
+    document.getElementById('copy-log-btn').style.display = 'block';
+    document.getElementById('copy-action-log-btn').style.display = 'block'; // アクションコピーボタンを表示
+
     document.getElementById('command-area').style.pointerEvents = 'auto';
 }
 
 function goToEnding() {
+    // リザルト画面に移行するとき、コピーボタンは一旦隠す
+    document.getElementById('copy-log-btn').style.display = 'none';
+    document.getElementById('copy-action-log-btn').style.display = 'none'; // アクションコピーボタンも隠す
+    
     document.getElementById('screen-battle').classList.remove('active');
     document.getElementById('result-screen').classList.add('active');
 
@@ -993,7 +1017,37 @@ function goToEnding() {
     } else {
         titleEl.innerText = "完全敗北・悪の組織への監禁エンド";
         titleEl.style.color = "var(--accent-enemy)";
-        textEl.innerHTML = `「ガハハ！ おい見ろよ！ あの偉そうな道士様が、泥まみれでピクピク動いてるぜぇ！」\n\nオークの無慈悲な質量攻撃に叩き潰され、儀玄はついに地に伏した。酸性汚泥とタールで完全に汚れ果てた道士服。剥ぎ取られた符籙。攻守の要たる透徹力の循環を恒久的に破壊された彼女に、もはや立ち上がる力は残されていない。\n\n儀玄: 「掌門たる私が、このような……俗世の、悍ましき欲望の泥に……くっ、殺せ……」\n\n地下闘技場の歪んだ観客（人質）たちからは、かつてない卑猥な野次と、高潔な存在が蹂虙され完全敗北を喫したことへの狂気的な歓声が爆発する。「おい、その服剥ぎ取っちまえ！」「監禁部屋へ連れてけ！」\n\n意識を失いかけた儀玄の長い髪をオークが手荒に掴み、観客席に見せつけるように引きずる。完全にエネルギーを奪取され無力化された彼女は、黒妖会の奥深くへと監禁され、凌辱と絶望の底へと突き落とされるバッドエンドを迎えた。`;
+        textEl.innerHTML = `「ガハハ！ おい見ろよ！ あの偉そうな道士様が、泥まみれでピクピク動いてるぜぇ！」\n\nオークの無慈悲な質量攻撃に叩き潰され、儀玄はついに地に伏した。酸性汚泥とタールで完全に汚れ果てた道士服。剥ぎ取られた符籙。攻守の要たる透徹力の循環を恒久的に破壊された彼女に、もはや立ち上がる力は残されていない。\n\n儀玄: 「掌門たる私が、このような……俗世の、悍ましき欲望の泥に……くっ、殺せ……」\n\n地下闘技場の歪んだ観客（人質）たちからは、かつてない卑猥な野次と、高潔な存在が蹂躙され完全敗北を喫したことへの狂気的な歓声が爆発する。「おい、その服剥ぎ取っちまえ！」「監禁部屋へ連れてけ！」\n\n意識を失いかけた儀玄の長い髪をオークが手荒に掴み、観客席に見せつけるように引きずる。完全にエネルギーを奪取され無力化された彼女は、黒妖会の奥深くへと監禁され、凌辱と絶望の底へと突き落とされるバッドエンドを迎えた。`;
+    }
+}
+
+// 修正：アクションとダメージログだけを収集してコピーする機能を追加
+function copyActionLog() {
+    const logArea = document.getElementById('log-area');
+    const entries = logArea.querySelectorAll('.log-entry');
+    let actionLogText = "";
+
+    entries.forEach(entry => {
+        // textクラスを持つログの中から、アクションとダメージに関連する文字列を検索
+        if (entry.classList.contains('log-text')) {
+            const text = entry.textContent;
+            if (text.includes('の行動：【') || text.includes('のダメージ！')) {
+                // HTMLタグを除外したテキストのみを取得し、改行を加える
+                actionLogText += text + "\n";
+            }
+        }
+    });
+
+    // クリップボードに書き込み
+    if (actionLogText.trim()) {
+        navigator.clipboard.writeText(actionLogText).then(() => {
+            log(`<strong>📋 アクションとダメージのログをクリップボードにコピーしました。</strong>`, 'system');
+        }).catch(err => {
+            log(`<strong>❌ ログのコピーに失敗しました。: ${err}</strong>`, 'warning');
+            alert("ログのコピーに失敗しました。ブラウザの設定を確認してください。");
+        });
+    } else {
+        log(`<strong>⚠️ コピーするアクションログがありません。</strong>`, 'warning');
     }
 }
 
@@ -1002,13 +1056,15 @@ function copyLog() {
     const entries = logArea.querySelectorAll('.log-entry');
     let fullLogText = "";
     entries.forEach(entry => { fullLogText += entry.innerText + "\n"; });
-
     if (fullLogText) {
         navigator.clipboard.writeText(fullLogText).then(() => {
-            alert("戦闘ログをクリップボードにコピーしました！");
-        }).catch(err => { alert("ログのコピーに失敗しました。"); });
+            log(`<strong>📋 戦闘ログをクリップボードにコピーしました。</strong>`, 'system');
+        }).catch(err => {
+            log(`<strong>❌ ログのコピーに失敗しました。: ${err}</strong>`, 'warning');
+            alert("ログのコピーに失敗しました。ブラウザの設定を確認してください。");
+        });
     } else {
-        alert("コピーするログがありません。");
+        log(`<strong>⚠️ コピーするログがありません。</strong>`, 'warning');
     }
 }
 
@@ -1029,6 +1085,7 @@ function updateUI() {
 
     const heroineVisualContainer = document.getElementById('heroine-visual-container');
     const heroineMudOverlay = document.getElementById('heroine-mud-overlay');
+    
     const fPanel = document.getElementById('filter-panel-area');
     const pollMarkerLine = document.getElementById('polluted-marker-line');
     const pollMarker = document.getElementById('polluted-marker');
@@ -1038,18 +1095,20 @@ function updateUI() {
         pollMarkerLine.style.display = 'block';
         fPanel.style.display = 'flex'; 
 
-        // フィルターON/OFFの連動処理を修正
+        // 修正：フィルターON/OFFの判定を厳密に行う
         if (isFilterEnabled) {
-            heroineVisualContainer.classList.add('polluted'); 
-            heroineMudOverlay.classList.add('active'); 
+            heroineVisualContainer.classList.add('polluted'); // 弱いsepia
+            heroineMudOverlay.classList.add('active'); // 薄いタールグラデーション
         } else {
-            heroineVisualContainer.classList.remove('polluted'); 
-            heroineMudOverlay.classList.remove('active'); 
+            heroineVisualContainer.classList.remove('polluted'); // 完全OFF
+            heroineMudOverlay.classList.remove('active'); // 完全OFF
         }
     } else {
         pollMarker.innerHTML = '';
         pollMarkerLine.style.display = 'none';
         fPanel.style.display = 'none';
+        
+        // 汚染されていない場合は常に完全OFF
         heroineVisualContainer.classList.remove('polluted');
         heroineMudOverlay.classList.remove('active');
     }

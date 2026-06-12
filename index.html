@@ -100,8 +100,6 @@
         .btn-start { background: #30d158; }
         .btn-copy { background: #3d4566; border: 1px solid #5a6594; }
         .btn-copy:active { background: #2b314a; }
-        .btn-copy-filtered { background: #8e44ad; border: 1px solid #a55cca; }
-        .btn-copy-filtered:active { background: #732d91; }
 
         .char-preview-container {
             text-align: center;
@@ -125,50 +123,86 @@
             margin-bottom: 4px;
             position: relative;
             display: flex;
-            justify-content: center;
+            justify-content: space-around; /* 横並びに配置 */
             align-items: center;
             overflow: hidden;
             flex-shrink: 0;
         }
-        .battle-char-img {
+
+        /* 画像コンテナ */
+        .battle-char-container {
+            width: 45%;
             height: 100%;
-            width: 100%;
-            object-fit: contain;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             position: relative;
-            z-index: 1;
-            transition: transform 0.4s ease, filter 0.5s ease;
+            overflow: visible; /* シミがはみ出してもいいように */
         }
 
-        #mud-overlay {
+        .battle-char-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            position: relative;
+            z-index: 1; /* シミの下 */
+            transition: transform 0.4s ease, filter 0.3s ease;
+        }
+
+        /* タールのシミオーバーレイ (ヒロイン限定) */
+        .mud-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(circle at 35% 40%, rgba(38, 24, 12, 0.85) 0%, rgba(0,0,0,0) 55%),
-                radial-gradient(circle at 65% 75%, rgba(15, 12, 8, 0.95) 0%, rgba(0,0,0,0) 50%),
-                linear-gradient(135deg, rgba(0,0,0,0) 20%, rgba(28, 18, 10, 0.7) 60%, rgba(8, 5, 3, 0.9) 100%);
-            mix-blend-mode: multiply;
-            pointer-events: none;
+            pointer-events: none; /* 下の画像をタップできるように */
             opacity: 0;
-            z-index: 3;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.4s ease;
+            z-index: 2; /* 画像の上 */
+            background-repeat: no-repeat;
         }
 
-        .battle-char-img.polluted-filter {
-            filter: sepia(45%) contrast(110%) brightness(50%) saturate(70%);
+        /* べっとりと付着した、飛び散ったタールの生々しいスポット表現 */
+        /* 複数のラジアルグラデーションを重ねて、不規則な飛び散りを作る */
+        .mud-overlay.active {
+            opacity: 1;
+            /* タールの色：黒、粘り気のある生々しいスポット */
+            background-image:
+                /* シミ1（ハードエッジで粘り気） */
+                radial-gradient(circle at 30% 40%, rgba(10, 8, 5, 0.98) 0%, rgba(10, 8, 5, 0.95) 45%, rgba(0, 0, 0, 0) 60%),
+                /* シミ2（薄い広がり） */
+                radial-gradient(circle at 65% 30%, rgba(15, 12, 10, 0.92) 0%, rgba(15, 12, 10, 0.85) 50%, rgba(0, 0, 0, 0) 70%),
+                /* シミ3（溜まり） */
+                radial-gradient(circle at 20% 70%, rgba(5, 4, 3, 1) 0%, rgba(5, 4, 3, 0.98) 55%, rgba(0, 0, 0, 0) 75%),
+                /* シミ4（小さな飛び散り） */
+                radial-gradient(ellipse at 80% 80%, rgba(12, 10, 8, 0.95) 0%, rgba(12, 10, 8, 0.85) 25%, rgba(0, 0, 0, 0) 35%),
+                /* シミ5（粘り気、光沢） */
+                radial-gradient(circle at 75% 60%, rgba(18, 15, 12, 0.95) 0%, rgba(18, 15, 12, 0.9) 48%, rgba(0, 0, 0, 0) 70%);
+            mix-blend-mode: multiply; /* 画像に馴染ませる */
         }
-        .polluted-bg {
-            background: linear-gradient(180deg, #1f150e 0%, #080503 100%) !important;
+
+        /* ヒロイン画像の汚染時の sepia/brightness 調整 (全体を黒く覆わないよう、弱める) */
+        #heroine-visual-container.polluted .battle-char-img {
+            filter: sepia(30%) contrast(110%); /* brightnessは下げない */
         }
+
+        /* 旧 sepia フィルター等は削除 */
+        .battle-char-img.polluted-filter,
+        .polluted-bg,
+        #mud-overlay {
+            filter: none !important;
+            background: none !important;
+            opacity: 0 !important;
+        }
+        
         .visual-effect-glow {
             box-shadow: inset 0 0 30px rgba(58,150,255,0.4);
         }
 
         .filter-control-panel {
             display: flex;
-            justify-content: flex-end;
+            justify( flex-end;
             margin-bottom: 4px;
             padding: 0 2px;
             flex-shrink: 0;
@@ -214,17 +248,11 @@
             border-left: 3px solid #3d4566;
         }
 
+        /* 引用色 */
         .log-system { background: rgba(48, 209, 88, 0.06); border-left-color: #30d158; color: #5af283; font-weight: bold; font-size: 0.85rem;}
         .log-text { color: var(--text-color); }
         .log-heroine-outer { color: #66aeff; font-weight: bold; }
-        .log-heroine-inner { 
-            color: var(--text-inner); 
-            font-style: italic; 
-            display: block;
-            margin-top: 4px;
-            padding-left: 8px;
-            border-left: 1px dashed #556278;
-        }
+        .log-heroine-inner { color: var(--text-inner); font-style: italic; display: block; margin-top: 4px; padding-left: 8px; border-left: 1px dashed #556278;}
         .log-enemy-speech { background: rgba(255, 69, 58, 0.05); border-left-color: var(--accent-enemy); color: #ff766f; font-weight: bold; }
         .log-spectator { background: rgba(255, 214, 10, 0.05); border-left-color: var(--text-spectator); color: #ffe14d;}
         .log-warning { background: rgba(255, 149, 0, 0.08); border-left-color: #ff9500; color: #ffb340; font-weight: bold; }
@@ -363,7 +391,7 @@
         #result-text {
             font-size: 0.95rem;
             white-space: pre-wrap;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             flex: 1;
             background: #07080c;
             padding: 15px;
@@ -381,9 +409,15 @@
         <h1>闘技場のコスプレイヤー</h1>
 
         <div class="select-box">
-            <h3 style="color:#ffd60a;">📷 【必須】手持ちの画像を4枚選ぶ</h3>
-            <p style="font-size:0.7rem; color:#8892b0; margin-bottom:6px;">タップして画像（立ち絵用）を4枚同時に選択してください。ファイル名が違っても確実に表示されるようになります。</p>
-            <input type="file" id="image-uploader" multiple accept="image/*" onchange="loadUserImages(event)">
+            <h3 style="color:#3a96ff;">📷 【必須】ヒロイン（儀玄）の画像を4枚選ぶ</h3>
+            <p style="font-size:0.7rem; color:#8892b0; margin-bottom:6px;">タップして画像（立ち絵用）を4枚同時に選択してください。</p>
+            <input type="file" id="image-uploader-heroine" multiple accept="image/*" onchange="loadHeroineImages(event)">
+        </div>
+
+        <div class="select-box">
+            <h3 style="color:#ff453a;">📷 【必須】悪役（オーク）の画像を4枚選ぶ</h3>
+            <p style="font-size:0.7rem; color:#8892b0; margin-bottom:6px;">タップして画像（立ち絵用）を4枚同時に選択してください。</p>
+            <input type="file" id="image-uploader-enemy" multiple accept="image/*" onchange="loadEnemyImages(event)">
         </div>
 
         <div class="select-box">
@@ -394,7 +428,7 @@
 
         <div id="forecast-area" style="display:none;">
             <div class="char-preview-container">
-                <img id="select-preview-img" src="" alt="儀玄 ビジュアル" class="preview-img">
+                <img id="select-preview-img" src="" alt="キャラクター ビジュアル" class="preview-img">
             </div>
             <div class="select-box">
                 <h3>2. 試合展開予想 & 難易度</h3>
@@ -407,8 +441,14 @@
 
     <div id="screen-battle" class="screen">
         <div id="battle-visual-area">
-            <div id="mud-overlay"></div>
-            <img id="heroine-visual" src="" alt="儀玄 立ち絵" class="battle-char-img">
+            <div id="heroine-visual-container" class="battle-char-container">
+                <img id="heroine-visual" src="" alt="儀玄 立ち絵" class="battle-char-img">
+                <div id="heroine-mud-overlay" class="mud-overlay"></div>
+            </div>
+            
+            <div id="enemy-visual-container" class="battle-char-container">
+                <img id="enemy-visual" src="" alt="オーク 立ち絵" class="battle-char-img">
+            </div>
         </div>
 
         <div class="filter-control-panel" id="filter-panel-area" style="display: none;">
@@ -473,9 +513,7 @@
     <div id="result-screen" class="screen">
         <h1 id="result-title">戦闘結末</h1>
         <div id="result-text"></div>
-        
-        <button id="copy-filtered-log-btn" class="btn btn-copy-filtered" onclick="copyFilteredLog()">ヒロイン・悪役の行動ログのみコピー</button>
-        <button id="copy-log-btn" class="btn btn-copy" onclick="copyLog()">全戦闘ログをコピー（観客ヤジ等含む）</button>
+        <button id="copy-log-btn" class="btn bth-copy" onclick="copyLog()">戦闘ログをコピー</button>
         <button class="btn btn-start" onclick="location.reload()">タイトルへ戻る</button>
     </div>
 
@@ -485,27 +523,48 @@
 // 画像未選択時のための初期ダミー画像（Base64 SVG）
 const dummyImage = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='180'><rect width='140' height='180' fill='%23222530'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%235a6594' font-size='11'>画像未読込</text></svg>";
 
-// この配列にユーザーが選んだ画像URLが動的に格納されます
+// ヒロイン画像URL配列 (修正)
 let heroineImages = [dummyImage, dummyImage, dummyImage, dummyImage];
+// 悪役画像URL配列 (追加)
+let enemyImages = [dummyImage, dummyImage, dummyImage, dummyImage];
 
-function loadUserImages(event) {
+// ヒロイン画像読み込み (修正)
+function loadHeroineImages(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
     heroineImages = [];
-    // 最大4枚まで読み込み、URLオブジェクトを生成して格納
     for (let i = 0; i < Math.min(files.length, 4); i++) {
         heroineImages.push(URL.createObjectURL(files[i]));
     }
-
-    // もし選択された画像が4枚未満なら、ある分をループさせて4枚の枠を埋める
+    // 4枚未満なら1枚目をループさせる
     while (heroineImages.length < 4 && heroineImages.length > 0) {
         heroineImages.push(heroineImages[0]);
     }
+    // プレビュー画像を更新 (ヒロインを選択中なら)
+    if (playerSide === 'heroine' && heroineImages.length > 0) {
+        document.getElementById('select-preview-img').src = heroineImages[0];
+    }
+    alert("ヒロインの画像を認識しました！計" + heroineImages.length + "枚の枠を埋めました。");
+}
 
-    // プレビュー画像を更新
-    document.getElementById('select-preview-img').src = heroineImages[0];
-    alert(files.length + "枚の画像を認識しました！次のステップに進んでください。");
+// 悪役画像読み込み (追加)
+function loadEnemyImages(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    enemyImages = [];
+    for (let i = 0; i < Math.min(files.length, 4); i++) {
+        enemyImages.push(URL.createObjectURL(files[i]));
+    }
+    while (enemyImages.length < 4 && enemyImages.length > 0) {
+        enemyImages.push(enemyImages[0]);
+    }
+    // プレビュー画像を更新 (悪役を選択中なら)
+    if (playerSide === 'enemy' && enemyImages.length > 0) {
+        document.getElementById('select-preview-img').src = enemyImages[0];
+    }
+    alert("悪役の画像を認識しました！計" + enemyImages.length + "枚の枠を埋めました。");
 }
 
 const initialData = {
@@ -576,7 +635,13 @@ function selectSide(side) {
     enemy = JSON.parse(JSON.stringify(initialData.enemy));
 
     document.getElementById('forecast-area').style.display = 'block';
-    document.getElementById('select-preview-img').src = heroineImages[0];
+    
+    // 選択陣営に応じたプレビュー画像を設定
+    if (side === 'heroine') {
+        document.getElementById('select-preview-img').src = heroineImages[0];
+    } else {
+        document.getElementById('select-preview-img').src = enemyImages[0];
+    }
     
     const diffBadge = document.getElementById('difficulty-output');
     const forecastText = document.getElementById('forecast-text');
@@ -586,7 +651,7 @@ function selectSide(side) {
         forecastText.innerText = "儀玄は高いATKと強力な通常技を持つ。最大の武器は「回避時に確定で次ターンを強奪する」特殊戦法。玄墨陣法で回避を高め、ヒット＆アウェイを狙うのが基本戦略となる。ただし、オークの酸性汚泥やタール攻撃を喰らうと、弱点『俗世の穢れ』が発動し、攻守が恒久的に致命的弱体化を遂げるため絶対の警戒が必要。";
     } else {
         diffBadge.innerHTML = `<span style="background:#ff453a; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">HARD</span>`;
-        forecastText.innerText = "儀玄の圧倒的な技のキレと、回避からの手番強奪ループは脅威そのもの。通常速度では捕らえにくいため、泥や酸性の粘液を伴う技（弱点属性）をいかに命中させるかが鍵。一度でも道士服を汚染すれば恒久デバフにより一気に戦況逆転、彼女のプライドを地下の泥に叩き落とせる。";
+        forecastText.innerText = "儀玄の圧倒的な技のキレと、回避からの手番強奪ループは脅威そのもの。通常速度では捕らえにくいため、泥や酸性の粘液を伴う技（弱点属性）をいかに命中させるかが鍵。一度でも道士服を汚染すれば恒久デバフにより一気に形形逆転、彼女のプライドを地下の泥に叩き落とせる。";
     }
 }
 
@@ -594,7 +659,9 @@ function startBattle() {
     document.getElementById('screen-select').classList.remove('active');
     document.getElementById('screen-battle').classList.add('active');
 
+    // 初期立ち絵を設定
     document.getElementById('heroine-visual').src = heroineImages[0];
+    document.getElementById('enemy-visual').src = enemyImages[0]; // 悪役画像も設定
 
     for(let i=0; i<3; i++) {
         drawCard(heroine, 'normal');
@@ -603,8 +670,8 @@ function startBattle() {
 
     log(`<strong>◆ 闘技場バトル開幕 ◆</strong>`, 'system');
     log(`青黒いエーテルエネルギーの残滓と、人質たちの歪んだ欲望が混ざり合う地下闘技場。`, 'text');
-    log(`儀玄: <span class="log-heroine-outer">${heroine.dialogue.intro.outer}</span>`, 'heroine-outer');
-    log(`儀玄: <span class="log-heroine-inner">${heroine.dialogue.intro.inner}</span>`, 'heroine-inner');
+    log(`儀玄: <span class="log-heroine-outer">${heroine.dialogue.intro.outer}</span>`, 'text');
+    log(`儀玄: <span class="log-heroine-inner">${heroine.dialogue.intro.inner}</span>`, 'text');
     log(`オーク: 「${enemy.dialogue.intro}」`, 'enemy-speech');
 
     nextTurnLoop();
@@ -675,6 +742,7 @@ function nextTurnLoop() {
 
     const activeChar = activeSide === 'heroine' ? heroine : enemy;
     
+    // ターン獲得側画像をランダム切り替え
     if (activeSide === 'heroine') {
         const randomImg = heroineImages[Math.floor(Math.random() * heroineImages.length)];
         document.getElementById('heroine-visual').src = randomImg;
@@ -686,6 +754,9 @@ function nextTurnLoop() {
         if (heroine.current.disable阵法Turns > 0) {
             heroine.current.disable阵法Turns--;
         }
+    } else if (activeSide === 'enemy') { // 悪役ターンも画像切り替え
+        const randomImg = enemyImages[Math.floor(Math.random() * enemyImages.length)];
+        document.getElementById('enemy-visual').src = randomImg;
     }
 
     const drawCount = activeChar.current.skippedLastTurn ? 2 : 1;
@@ -820,8 +891,8 @@ function executeCardEffect(attackerSide, card) {
         if (card.isWeaknessStriker) {
             heroine.current.isPolluted = true;
             heroine.current.state = "屈辱";
-            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の撒き散らした酸性汚泥・タールが道士服と符籙を無残に汚染！ 術の循環が完全崩壊し、ATKとDEFが恒久的に-25された！</span>`, 'warning');
-            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'heroine-inner');
+            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の撒き散らした酸性汚泥・タールが黄色い道士服と符籙を無残に汚染！ 透徹力の循環が完全崩壊し、ATK and DEFが恒久的に-25された！</span>`, 'warning');
+            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
         }
     } else {
         if (card.isUltimate) {
@@ -942,33 +1013,6 @@ function goToEnding() {
     }
 }
 
-// ヒロインと悪役の純粋な行動・セリフログだけをコピーする関数
-function copyFilteredLog() {
-    const logArea = document.getElementById('log-area');
-    const entries = logArea.querySelectorAll('.log-entry');
-    let filteredLogText = "";
-
-    entries.forEach(entry => {
-        // システム文、観客のヤジ、システム警告文を除外する
-        if (entry.classList.contains('log-system') || 
-            entry.classList.contains('log-spectator') || 
-            entry.classList.contains('log-warning')) {
-            return;
-        }
-        filteredLogText += entry.innerText + "\n";
-    });
-
-    if (filteredLogText.trim()) {
-        navigator.clipboard.writeText(filteredLogText).then(() => {
-            alert("ヒロインと悪役の【行動・セリフのみ】をクリップボードにコピーしました！");
-        }).catch(err => {
-            alert("ログのコピーに失敗しました。お使いのブラウザの権限設定を確認してください。");
-        });
-    } else {
-        alert("コピーするキャラクターログがありません。");
-    }
-}
-
 function copyLog() {
     const logArea = document.getElementById('log-area');
     const entries = logArea.querySelectorAll('.log-entry');
@@ -980,9 +1024,9 @@ function copyLog() {
 
     if (fullLogText) {
         navigator.clipboard.writeText(fullLogText).then(() => {
-            alert("すべての戦闘ログをクリップボードにコピーしました！");
+            alert("戦闘ログをクリップボードにコピーしました！");
         }).catch(err => {
-            alert("ログのコピーに失敗しました。");
+            alert("ログのコピーに失敗しました。お使いのブラウザの権限設定を確認してください。");
         });
     } else {
         alert("コピーするログがありません。");
@@ -1004,9 +1048,12 @@ function updateUI() {
     mTag.innerText = heroine.current.state;
     mTag.className = `mental-tag m-${heroine.current.state}`;
 
-    const vImg = document.getElementById('heroine-visual');
     const vArea = document.getElementById('battle-visual-area');
-    const mud = document.getElementById('mud-overlay');
+    
+    // ヒロインコンテナへの汚染クラス適用 ( brightnessは下げない)
+    const heroineVisualContainer = document.getElementById('heroine-visual-container');
+    const heroineMudOverlay = document.getElementById('heroine-mud-overlay');
+    
     const fPanel = document.getElementById('filter-panel-area');
     const pollMarkerLine = document.getElementById('polluted-marker-line');
     const pollMarker = document.getElementById('polluted-marker');
@@ -1014,31 +1061,36 @@ function updateUI() {
     if (heroine.current.isPolluted) {
         pollMarker.innerHTML = `<span class="debuff-badge">⚠️ 衣服・術式汚染（ステータス恒久低下中）</span>`;
         pollMarkerLine.style.display = 'block';
-        fPanel.style.display = 'flex';
+        
+        // ヒロインコンテナにクラス付与
+        heroineVisualContainer.classList.add('polluted'); 
+        fPanel.style.display = 'flex'; // フィルターパネル
 
+        // タールの生々しいスポットを表示
         if (isFilterEnabled) {
-            vImg.classList.add('polluted-filter');         
-            vArea.classList.add('polluted-bg');      
-            mud.style.opacity = '1';
+            heroineMudOverlay.classList.add('active'); 
         } else {
-            vImg.classList.remove('polluted-filter');         
-            vArea.classList.remove('polluted-bg');      
-            mud.style.opacity = '0';
+            heroineMudOverlay.classList.remove('active'); 
         }
     } else {
         pollMarker.innerHTML = '';
         pollMarkerLine.style.display = 'none';
         fPanel.style.display = 'none';
-        vImg.classList.remove('polluted-filter');         
-        vArea.classList.remove('polluted-bg');      
-        mud.style.opacity = '0';
+        
+        // クラス削除
+        heroineVisualContainer.classList.remove('polluted');
+        heroineMudOverlay.classList.remove('active');
     }
 
+    // 回避陣法のエフェクト
     if (heroine.current.evadeBuffTurns > 0) {
-        vArea.classList.add('visual-effect-glow');
+        heroineVisualContainer.classList.add('visual-effect-glow');
     } else {
-        vArea.classList.remove('visual-effect-glow');
+        heroineVisualContainer.classList.remove('visual-effect-glow');
     }
+
+    // 悪役画像の親要素（`enemy-visual-container`）に対しては一切操作を行わない。
+    // これによりヒロインにのみ適用される。
 
     const hMod = getModifiedStats(heroine, true);
     document.getElementById('h-spd').innerText = hMod.spd;

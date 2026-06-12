@@ -19,7 +19,7 @@
             overscroll-behavior-y: none;
             height: 100%;
             width: 100%;
-            overflow: hidden; /* 防止全体滚动 */
+            overflow: hidden;
         }
 
         * {
@@ -67,11 +67,11 @@
             display: flex;
         }
 
-        /* 战斗画面布局修改，确保文本框占据剩余空间 */
         #screen-battle {
             display: none;
             flex-direction: column;
-            overflow: hidden; /* 战斗画面本身不滚动 */
+            overflow: hidden;
+            position: relative; /* ボタンの絶対配置基準 */
         }
         #screen-battle.active {
             display: flex;
@@ -159,7 +159,7 @@
             transition: transform 0.4s ease, filter 0.3s ease;
         }
 
-        /* 修复：汚染フィルター、不規則な泥のシミ（スポット）表現 */
+        /* 汚染タールスポット（キャラクターを隠さないよう透過閾値を厳格化） */
         .mud-overlay {
             position: absolute;
             top: 0;
@@ -173,26 +173,21 @@
             background-repeat: no-repeat;
         }
 
+        /* キャラクターが見えるよう、シミの箇所以外は完全な透明(transparent)に */
         .mud-overlay.active {
             opacity: 1;
-            /* 粘り気のある生々しいタールの飛び散り */
             background-image:
-                /* シミ1（ハードエッジで粘り気のある溜まり） */
-                radial-gradient(circle at 30% 40%, rgba(40, 25, 10, 0.98) 0%, rgba(20, 10, 5, 0.95) 45%, rgba(0, 0, 0, 0) 60%),
-                /* シミ2（薄い広がりと飛び散り） */
-                radial-gradient(circle at 65% 30%, rgba(60, 40, 20, 0.9) 0%, rgba(40, 25, 10, 0.8) 50%, rgba(0, 0, 0, 0) 70%),
-                /* シミ3（下部の大きな溜まり） */
-                radial-gradient(circle at 20% 70%, rgba(20, 10, 5, 1) 0%, rgba(10, 5, 2, 0.98) 55%, rgba(0, 0, 0, 0) 75%),
-                /* シミ4（小さな飛び散りスポット） */
-                radial-gradient(ellipse at 80% 80%, rgba(50, 30, 15, 0.95) 0%, rgba(30, 15, 8, 0.85) 25%, rgba(0, 0, 0, 0) 35%),
-                /* シミ5（サイドの粘り気） */
-                radial-gradient(circle at 75% 60%, rgba(35, 20, 8, 0.95) 0%, rgba(25, 12, 5, 0.9) 48%, rgba(0, 0, 0, 0) 70%);
-            mix-blend-mode: multiply; /* 画像に馴染ませる */
+                radial-gradient(circle at 35% 30%, #150f0a 0%, #20160e 55%, transparent 60%),
+                radial-gradient(circle at 42% 35%, #0a0705 0%, #150f0a 45%, transparent 50%),
+                radial-gradient(circle at 65% 55%, #1c130d 0%, #281b12 65%, transparent 70%),
+                radial-gradient(ellipse at 25% 65%, #110c08 0%, #1c130d 50%, transparent 55%),
+                radial-gradient(circle at 70% 25%, #080503 0%, #110c08 40%, transparent 45%),
+                radial-gradient(circle at 50% 70%, #1c130d 0%, #251a10 55%, transparent 60%);
         }
 
-        /* 修复：brightnessは下げない、sepiaを弱める */
+        /* 汚染フィルターON時のみ適用される画像調整 */
         #heroine-visual-container.polluted .battle-char-img {
-            filter: sepia(30%) contrast(115%);
+            filter: sepia(35%) contrast(115%);
         }
         
         .visual-effect-glow {
@@ -223,21 +218,21 @@
             border-color: #ad6b3b;
         }
 
-        /* 修复：スワイプ出来るテキスト欄 */
+        /* スワイプ（スクロール）可能な高視認性テキストログエリア */
         #log-area {
-            flex: 1; /* 占据剩余空间 */
+            flex: 1; 
             min-height: 0;
-            overflow-y: auto; /* 允许垂直滚动 */
-            -webkit-overflow-scrolling: touch; /* 优化iOS滚动 */
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; 
             padding: 10px;
-            background: #0d1017; /* 稍浅的背景以示区别 */
+            background: #0d1017; 
             border-radius: 6px;
             margin-bottom: 4px;
             font-size: 0.95rem;
-            border: 2px solid #202433; /* 增强边框感 */
+            border: 2px solid #202433; 
             display: flex;
             flex-direction: column;
-            scroll-behavior: smooth; /* 平滑滚动 */
+            scroll-behavior: smooth; 
         }
 
         .log-entry {
@@ -248,7 +243,7 @@
             word-break: break-all;
             background: rgba(255, 255, 255, 0.02);
             border-left: 3px solid #3d4566;
-            flex-shrink: 0; /* 防止内容被压缩 */
+            flex-shrink: 0; 
         }
 
         .log-system { background: rgba(48, 209, 88, 0.06); border-left-color: #30d158; color: #5af283; font-weight: bold; font-size: 0.85rem;}
@@ -369,16 +364,29 @@
             font-weight: bold;
         }
 
+        /* 確実にタップ可能な最前面ポップアップ結末ボタン */
         .end-trigger-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
             background: linear-gradient(135deg, #8a1f11, #b82e14);
             color: #fff;
             border: 2px solid #ff6b6b;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.95rem;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1.05rem;
             font-weight: bold;
             text-align: center;
             cursor: pointer;
+            z-index: 9999; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.7);
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 5px 15px rgba(240, 50, 50, 0.4); }
+            100% { box-shadow: 0 5px 25px rgba(240, 50, 50, 0.8); }
         }
 
         .forecast-panel {
@@ -508,8 +516,9 @@
                 <div id="hand-container"></div>
                 <button class="pass-btn" id="pass-button" onclick="playerPass()" style="width: 100%; margin-top: 4px;">カードを使わずにターン終了 (次ドロー+2)</button>
             </div>
-            <button id="end-trigger" class="end-trigger-btn" style="display: none;" onclick="goToEnding()">激闘終結：結末（エンディング）を確認する</button>
         </div>
+
+        <button id="end-trigger" class="end-trigger-btn" style="display: none;" onclick="goToEnding()">激闘終結：結末（エンディング）を確認する</button>
     </div>
 
     <div id="result-screen" class="screen">
@@ -522,42 +531,31 @@
 </div>
 
 <script>
-// 画像未選択時のための初期ダミー画像（Base64 SVG）
 const dummyImage = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='180'><rect width='140' height='180' fill='%23222530'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%235a6594' font-size='11'>画像未読込</text></svg>";
 
-// ヒロイン画像URL配列
 let heroineImages = [dummyImage, dummyImage, dummyImage, dummyImage];
-// 修复：悪役画像は単一のURL
 let enemyImage = dummyImage;
 
-// ヒロイン画像読み込み
 function loadHeroineImages(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
-
     heroineImages = [];
     for (let i = 0; i < Math.min(files.length, 4); i++) {
         heroineImages.push(URL.createObjectURL(files[i]));
     }
-    // 4枚未満なら1枚目をループさせる
     while (heroineImages.length < 4 && heroineImages.length > 0) {
         heroineImages.push(heroineImages[0]);
     }
-    // プレビュー画像を更新 (ヒロインを選択中なら)
     if (playerSide === 'heroine' && heroineImages.length > 0) {
         document.getElementById('select-preview-img').src = heroineImages[0];
     }
     alert("ヒロインの画像を認識しました！");
 }
 
-// 修复：悪役画像読み込み（単一ファイル）
 function loadEnemyImage(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
-
     enemyImage = URL.createObjectURL(files[0]);
-    
-    // プレビュー画像を更新 (悪役を選択中なら)
     if (playerSide === 'enemy') {
         document.getElementById('select-preview-img').src = enemyImage;
     }
@@ -630,14 +628,11 @@ function selectSide(side) {
     playerSide = side;
     heroine = JSON.parse(JSON.stringify(initialData.heroine));
     enemy = JSON.parse(JSON.stringify(initialData.enemy));
-
     document.getElementById('forecast-area').style.display = 'block';
     
-    // 選択陣営に応じたプレビュー画像を設定
     if (side === 'heroine') {
         document.getElementById('select-preview-img').src = heroineImages[0];
     } else {
-        // 修复：悪役は単一画像
         document.getElementById('select-preview-img').src = enemyImage;
     }
     
@@ -656,10 +651,7 @@ function selectSide(side) {
 function startBattle() {
     document.getElementById('screen-select').classList.remove('active');
     document.getElementById('screen-battle').classList.add('active');
-
-    // 初期立ち絵を設定
     document.getElementById('heroine-visual').src = heroineImages[0];
-    // 修复：悪役は単一画像
     document.getElementById('enemy-visual').src = enemyImage;
 
     for(let i=0; i<3; i++) {
@@ -741,7 +733,6 @@ function nextTurnLoop() {
 
     const activeChar = activeSide === 'heroine' ? heroine : enemy;
     
-    // ヒロイン画像のみランダム切り替え
     if (activeSide === 'heroine') {
         const randomImg = heroineImages[Math.floor(Math.random() * heroineImages.length)];
         document.getElementById('heroine-visual').src = randomImg;
@@ -754,7 +745,6 @@ function nextTurnLoop() {
             heroine.current.disable阵法Turns--;
         }
     } 
-    // 修复：悪役ターンでも画像は変えない（単一画像のため）
 
     const drawCount = activeChar.current.skippedLastTurn ? 2 : 1;
     activeChar.current.skippedLastTurn = false;
@@ -818,10 +808,8 @@ function aiTurn(side, char) {
 function useCard(index) {
     const char = playerSide === 'heroine' ? heroine : enemy;
     const card = char.current.hand[index];
-    
     char.current.hand.splice(index, 1);
     executeCardEffect(playerSide, card);
-    
     char.current.actionCount++;
     document.getElementById('command-area').style.pointerEvents = 'none';
     setTimeout(nextTurnLoop, 1500);
@@ -831,7 +819,6 @@ function playerPass() {
     const char = playerSide === 'heroine' ? heroine : enemy;
     char.current.skippedLastTurn = true;
     log(`${char.name}は息を整え、カードを使わずにターンを終了した。`, 'text');
-    
     char.current.actionCount++;
     document.getElementById('command-area').style.pointerEvents = 'none';
     setTimeout(nextTurnLoop, 1500);
@@ -888,7 +875,7 @@ function executeCardEffect(attackerSide, card) {
         if (card.isWeaknessStriker) {
             heroine.current.isPolluted = true;
             heroine.current.state = "屈辱";
-            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の撒き散らした酸性汚泥・タールが黄色い道士服と符籙を無残に汚染！ 術の循環が致命的に阻害され、ATKとDEFが恒久的に-25された！</span>`, 'warning');
+            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の放った酸性汚泥・タールが黄色い道士服を無残に汚染！ 術の循環が致命的に阻害され、ATKとDEFが恒久的に-25された！</span>`, 'warning');
             log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
         }
     } else {
@@ -1006,7 +993,7 @@ function goToEnding() {
     } else {
         titleEl.innerText = "完全敗北・悪の組織への監禁エンド";
         titleEl.style.color = "var(--accent-enemy)";
-        textEl.innerHTML = `「ガハハ！ おい見ろよ！ あの偉そうな道士様が、泥まみれでピクピク動いてるぜぇ！」\n\nオークの無慈悲な質量攻撃に叩き潰され、儀玄はついに地に伏した。酸性汚泥とタールで完全に汚れ果てた道士服。剥ぎ取られた符籙。攻守の要たる透徹力の循環を恒久的に破壊された彼女に、もはや立ち上がる力は残されていない。\n\n儀玄: 「掌門たる私が、このような……俗世の、悍ましき欲望の泥に……くっ、殺せ……」\n\n地下闘技場の歪んだ観客（人質）たちからは、かつてない卑猥な野次と、高潔な存在が蹂躙され完全敗北を喫したことへの狂気的な歓声が爆発する。「おい、その服剥ぎ取っちまえ！」「監禁部屋へ連れてけ！」\n\n意識を失いかけた儀玄の長い髪をオークが手荒に掴み、観客席に見せつけるように引きずる。完全にエネルギーを奪取され無力化された彼女は、黒妖会の奥深くへと監禁され、凌辱と絶望の底へと突き落とされるバッドエンドを迎えた。`;
+        textEl.innerHTML = `「ガハハ！ おい見ろよ！ あの偉そうな道士様が、泥まみれでピクピク動いてるぜぇ！」\n\nオークの無慈悲な質量攻撃に叩き潰され、儀玄はついに地に伏した。酸性汚泥とタールで完全に汚れ果てた道士服。剥ぎ取られた符籙。攻守の要たる透徹力の循環を恒久的に破壊された彼女に、もはや立ち上がる力は残されていない。\n\n儀玄: 「掌門たる私が、このような……俗世の、悍ましき欲望の泥に……くっ、殺せ……」\n\n地下闘技場の歪んだ観客（人質）たちからは、かつてない卑猥な野次と、高潔な存在が蹂虙され完全敗北を喫したことへの狂気的な歓声が爆発する。「おい、その服剥ぎ取っちまえ！」「監禁部屋へ連れてけ！」\n\n意識を失いかけた儀玄の長い髪をオークが手荒に掴み、観客席に見せつけるように引きずる。完全にエネルギーを奪取され無力化された彼女は、黒妖会の奥深くへと監禁され、凌辱と絶望の底へと突き落とされるバッドエンドを迎えた。`;
     }
 }
 
@@ -1014,17 +1001,12 @@ function copyLog() {
     const logArea = document.getElementById('log-area');
     const entries = logArea.querySelectorAll('.log-entry');
     let fullLogText = "";
-
-    entries.forEach(entry => {
-        fullLogText += entry.innerText + "\n";
-    });
+    entries.forEach(entry => { fullLogText += entry.innerText + "\n"; });
 
     if (fullLogText) {
         navigator.clipboard.writeText(fullLogText).then(() => {
             alert("戦闘ログをクリップボードにコピーしました！");
-        }).catch(err => {
-            alert("ログのコピーに失敗しました。");
-        });
+        }).catch(err => { alert("ログのコピーに失敗しました。"); });
     } else {
         alert("コピーするログがありません。");
     }
@@ -1047,7 +1029,6 @@ function updateUI() {
 
     const heroineVisualContainer = document.getElementById('heroine-visual-container');
     const heroineMudOverlay = document.getElementById('heroine-mud-overlay');
-    
     const fPanel = document.getElementById('filter-panel-area');
     const pollMarkerLine = document.getElementById('polluted-marker-line');
     const pollMarker = document.getElementById('polluted-marker');
@@ -1055,22 +1036,20 @@ function updateUI() {
     if (heroine.current.isPolluted) {
         pollMarker.innerHTML = `<span class="debuff-badge">⚠️ 衣服・術式汚染（ステータス恒久低下中）</span>`;
         pollMarkerLine.style.display = 'block';
-        
-        // ヒロインコンテナにクラス付与（brightnessは下げない、弱Sepia）
-        heroineVisualContainer.classList.add('polluted'); 
         fPanel.style.display = 'flex'; 
 
-        // 修复：タールの生々しいスポットを表示
+        // フィルターON/OFFの連動処理を修正
         if (isFilterEnabled) {
+            heroineVisualContainer.classList.add('polluted'); 
             heroineMudOverlay.classList.add('active'); 
         } else {
+            heroineVisualContainer.classList.remove('polluted'); 
             heroineMudOverlay.classList.remove('active'); 
         }
     } else {
         pollMarker.innerHTML = '';
         pollMarkerLine.style.display = 'none';
         fPanel.style.display = 'none';
-        
         heroineVisualContainer.classList.remove('polluted');
         heroineMudOverlay.classList.remove('active');
     }
@@ -1094,7 +1073,6 @@ function renderHand(char) {
     
     char.current.hand.forEach((card, idx) => {
         const is陣法Disabled = (playerSide === 'heroine' && card.is阵法 && heroine.current.disable阵法Turns > 0);
-
         const cardEl = document.createElement('div');
         cardEl.className = `card ${card.isSpecial ? 'special' : ''} ${is陣法Disabled ? 'disabled' : ''}`;
         
@@ -1120,7 +1098,6 @@ function log(text, type) {
     entry.className = `log-entry log-${type}`;
     entry.innerHTML = text;
     logArea.appendChild(entry); 
-    // 修复：自动滚动到底部
     logArea.scrollTop = logArea.scrollHeight;
 }
 </script>

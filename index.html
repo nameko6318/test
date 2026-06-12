@@ -15,6 +15,11 @@
             --text-spectator: #ffd60a;
         }
 
+        /* スマホの誤作動による引っ張ってリロード(Pull-to-refresh)を完全に防止 */
+        html, body {
+            overscroll-behavior-y: none;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -28,7 +33,7 @@
             font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.6;
+            line-height: 1.5;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -46,6 +51,7 @@
             overflow: hidden;
             border-left: 1px solid #222530;
             border-right: 1px solid #222530;
+            overscroll-behavior-y: none; /* コンテナ側でも重ねてリロード防止 */
         }
 
         .screen {
@@ -53,7 +59,7 @@
             width: 100%;
             height: 100%;
             flex-direction: column;
-            padding: 15px;
+            padding: 10px;
             overflow-y: auto;
         }
 
@@ -63,47 +69,63 @@
 
         h1 {
             text-align: center;
-            font-size: 1.4rem;
-            margin-bottom: 10px;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
             color: var(--accent-heroine);
             text-shadow: 0 0 12px rgba(58,150,255,0.4);
         }
 
         .world-desc {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             background: #181b26;
-            padding: 12px;
+            padding: 10px;
             border-radius: 6px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border: 1px solid #252a3a;
             border-left: 3px solid var(--accent-heroine);
         }
 
         .select-box {
             background: var(--panel-bg);
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border: 1px solid #252a3a;
         }
 
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+            transition: background 0.2s;
+        }
+        .btn-heroine { background: #1d71ff; }
+        .btn-enemy { background: #4b5366; }
+        .btn-start { background: #30d158; }
+
         .char-preview-container {
             text-align: center;
-            margin: 10px 0;
+            margin: 5px 0;
         }
         .preview-img {
-            width: 160px;
+            width: 140px;
             height: auto;
             border-radius: 8px;
             border: 2px solid var(--accent-heroine);
-            box-shadow: 0 0 15px rgba(58,150,255,0.3);
             background: #000;
         }
 
-        /* ログエリア拡大のため、ビジュアル枠の縦幅をコンパクト(220px→135px)に調整 */
+        /* 画像をメインに据えるため、縦幅を135px → 220pxへ大幅拡大 */
         #battle-visual-area {
             width: 100%;
-            height: 135px;
+            height: 220px;
             background: linear-gradient(180deg, #101424 0%, #07080c 100%);
             border: 1px solid #222530;
             border-radius: 8px;
@@ -113,22 +135,13 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-        }
-        #battle-visual-area::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 30px;
-            background: linear-gradient(to top, #07080c, transparent);
-            z-index: 2;
+            flex-shrink: 0;
         }
         .battle-char-img {
-            height: 140%;
-            width: auto;
-            object-fit: contain;
+            height: 100%;
+            width: 100%;
+            object-fit: contain; /* 枠内に収まる最大サイズで綺麗に表示 */
             position: relative;
-            bottom: -15px;
             z-index: 1;
             transition: transform 0.4s ease, filter 0.5s ease;
         }
@@ -153,11 +166,9 @@
 
         .battle-char-img.polluted-filter {
             filter: sepia(45%) contrast(110%) brightness(50%) saturate(70%);
-            transform: scale(0.97);
         }
         .polluted-bg {
             background: linear-gradient(180deg, #1f150e 0%, #080503 100%) !important;
-            box-shadow: inset 0 0 25px rgba(92, 53, 26, 0.7);
         }
         .visual-effect-glow {
             box-shadow: inset 0 0 30px rgba(58,150,255,0.4);
@@ -166,8 +177,9 @@
         .filter-control-panel {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             padding: 0 2px;
+            flex-shrink: 0;
         }
         .toggle-btn {
             background: #1c1f2b;
@@ -184,28 +196,26 @@
             background: #613a1e;
             color: #ffb87a;
             border-color: #ad6b3b;
-            box-shadow: 0 0 8px rgba(173,107,59,0.3);
         }
 
-        /* テキスト表示欄（ログエリア）の超拡大化 */
+        /* テキスト表示欄（ログエリア）下に追加され、自動で動かない設定 */
         #log-area {
-            flex: 1; /* 残りのスペースをすべて吸い上げて最大化 */
+            flex: 1; 
+            min-height: 0; /* フレックス縮小を正しく機能させる */
             overflow-y: auto;
-            padding: 12px;
+            padding: 10px;
             background: #090a0f;
             border-radius: 6px;
-            margin-bottom: 8px;
-            font-size: 0.95rem; /* 文字を少し大きく */
+            margin-bottom: 4px;
+            font-size: 0.95rem;
             border: 1px solid #202433;
-            display: flex;
-            flex-direction: column;
         }
 
         .log-entry {
             margin-bottom: 8px;
-            padding: 10px 12px;
+            padding: 8px 10px;
             border-radius: 6px;
-            line-height: 1.5;
+            line-height: 1.4;
             word-break: break-all;
             background: rgba(255, 255, 255, 0.02);
             border-left: 3px solid #3d4566;
@@ -226,26 +236,28 @@
         .log-spectator { background: rgba(255, 214, 10, 0.05); border-left-color: var(--text-spectator); color: #ffe14d;}
         .log-warning { background: rgba(255, 149, 0, 0.08); border-left-color: #ff9500; color: #ffb340; font-weight: bold; }
 
+        /* ステータスエリアをさらに低床・コンパクト化 */
         #status-area {
             background: var(--panel-bg);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
+            padding: 6px 8px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
             border: 1px solid #252a3a;
+            flex-shrink: 0;
         }
 
         .status-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .gauge-container {
             background: #222533;
-            height: 12px;
-            border-radius: 6px;
+            height: 10px;
+            border-radius: 5px;
             overflow: hidden;
             position: relative;
         }
@@ -254,17 +266,17 @@
         .hp-bar-heroine { background: linear-gradient(90deg, #1d71ff, #3a96ff); }
         .hp-bar-enemy { background: linear-gradient(90deg, #ff3b30, #ff453a); }
         .charge-bar { background: linear-gradient(90deg, #ff9500, #ffd60a); }
-        .gauge-text { position: absolute; width: 100%; text-align: center; font-size: 9px; line-height: 12px; color: #fff; font-weight: bold; }
+        .gauge-text { position: absolute; width: 100%; text-align: center; font-size: 8px; line-height: 10px; color: #fff; font-weight: bold; }
 
         .mental-tag {
-            padding: 1px 5px;
+            padding: 1px 4px;
             border-radius: 3px;
             font-weight: bold;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-align: center;
         }
         .m-通常 { background: #636e72; color: #fff; }
-        .m-昂揚 { background: #0984e3; color: #fff; box-shadow: 0 0 6px var(--accent-heroine); }
+        .m-昂揚 { background: #0984e3; color: #fff; }
         .m-怯え { background: #6c5ce7; color: #fff; }
         .m-屈辱 { background: #a29bfe; color: #fff; }
         .m-絶望 { background: #000000; color: #ff3b30; border: 1px solid #ff3b30; }
@@ -272,48 +284,51 @@
         .debuff-badge {
             background: #ff9500;
             color: black;
-            font-size: 10px;
-            padding: 1px 5px;
+            font-size: 9px;
+            padding: 1px 4px;
             border-radius: 3px;
             font-weight: bold;
         }
 
+        /* コマンドエリアの極小化 */
         #command-area {
             background: #151821;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 6px 8px;
+            border-radius: 6px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             border: 1px solid #252a3a;
+            flex-shrink: 0;
         }
 
         #hand-container {
             display: flex;
             gap: 6px;
             overflow-x: auto;
-            padding-bottom: 4px;
-            height: 92px;
+            padding-bottom: 2px;
+            height: 84px;
+            transition: all 0.2s;
         }
 
         .card {
-            flex: 0 0 92px;
-            height: 82px;
+            flex: 0 0 90px;
+            height: 76px;
             background: #222636;
             border: 1px solid #3d4566;
-            border-radius: 6px;
-            padding: 5px;
+            border-radius: 5px;
+            padding: 4px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
             color: #fff;
         }
         .card.special {
             background: linear-gradient(135deg, #1b2640, #133966);
             border-color: var(--accent-heroine);
-            box-shadow: 0 0 8px rgba(58,150,255,0.4);
+            box-shadow: 0 0 6px rgba(58,150,255,0.4);
         }
         .card.disabled {
             opacity: 0.4;
@@ -321,17 +336,15 @@
             background: #2d3142 !important;
         }
         .card-name { font-weight: bold; line-height: 1.2; height: 2.4em; overflow: hidden; color: #e3e7f0; }
-        
-        /* チャージ(C)追加に伴うメタデータのフォントサイズ微調整 */
-        .card-meta { display: flex; justify-content: space-between; font-size: 0.6rem; color: #9daec6; font-weight: bold; }
+        .card-meta { display: flex; justify-content: space-between; font-size: 0.55rem; color: #9daec6; font-weight: bold; }
 
         .pass-btn {
             background: #2c3040;
             color: #fff;
             border: 1px solid #3d4566;
-            padding: 8px;
-            border-radius: 5px;
-            font-size: 0.85rem;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
             font-weight: bold;
         }
 
@@ -339,28 +352,21 @@
             background: linear-gradient(135deg, #8a1f11, #b82e14);
             color: #fff;
             border: 2px solid #ff6b6b;
-            padding: 12px;
+            padding: 10px;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 69, 58, 0.4);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(255, 69, 58, 0.6); }
-            100% { transform: scale(1); }
         }
 
         .forecast-panel {
             background: #12141c;
             border: 1px dashed #3d4566;
-            padding: 12px;
+            padding: 10px;
             border-radius: 5px;
-            font-size: 0.9rem;
-            margin-top: 10px;
+            font-size: 0.85rem;
+            margin-top: 8px;
         }
 
         #result-text {
@@ -380,7 +386,6 @@
 
 <div id="game-container">
 
-    <!-- フェーズ1：キャラクター選択画面 -->
     <div id="screen-select" class="screen active">
         <h1>闘技場のコスプレイヤー</h1>
         <div class="world-desc">
@@ -407,7 +412,6 @@
         </div>
     </div>
 
-    <!-- フェーズ2：バトル画面 -->
     <div id="screen-battle" class="screen">
         <div id="battle-visual-area">
             <div id="mud-overlay"></div>
@@ -418,16 +422,13 @@
             <button id="filter-toggle-btn" class="toggle-btn active" onclick="toggleFilter()">汚染フィルター: ON</button>
         </div>
 
-        <!-- 視認性を劇的に向上させた超拡大ログエリア -->
         <div id="log-area"></div>
 
-        <!-- ステータス表示（レイアウトを完全に統一し、儀玄側にもチャージを搭載） -->
         <div id="status-area">
-            <div id="polluted-marker-line" style="margin-bottom: 4px; text-align: right; height: 16px; display: none;">
+            <div id="polluted-marker-line" style="margin-bottom: 2px; text-align: right; height: 14px; display: none;">
                 <span id="polluted-marker"></span>
             </div>
             
-            <!-- 儀玄ステータス -->
             <div class="status-row">
                 <span style="color:var(--accent-heroine); font-weight:bold; width: 45px;">儀玄</span>
                 <span id="heroine-mental" class="mental-tag m-通常" style="width: 32px;">通常</span>
@@ -435,21 +436,19 @@
                     <div id="heroine-hp-bar" class="gauge-bar hp-bar-heroine" style="width: 100%;"></div>
                     <div id="heroine-hp-text" class="gauge-text">HP: 500</div>
                 </div>
-                <!-- 新設されたヒロインチャージゲージ -->
                 <div class="gauge-container" style="width: 22%;">
                     <div id="heroine-charge-bar" class="gauge-bar charge-bar" style="width: 0%;"></div>
                     <div id="heroine-charge-text" class="gauge-text">CHG: 0</div>
                 </div>
             </div>
-            <div class="status-row" style="margin-bottom: 8px; font-size: 0.75rem; color:#8892b0;">
-                <span>SPD: <span id="h-spd">70</span> / IQ: <span id="h-int">60</span> / ATK: <span id="h-atk">75</span> / DEF: <span id="h-def">65</span></span>
-                <span>倍率速度: <span id="h-speed-val">-</span></span>
+            <div class="status-row" style="margin-bottom: 4px; font-size: 0.7rem; color:#8892b0;">
+                <span>SPD:<span id="h-spd">70</span>/IQ:<span id="h-int">60</span>/ATK:<span id="h-atk">75</span>/DEF:<span id="h-def">65</span></span>
+                <span>倍率速度:<span id="h-speed-val">-</span></span>
             </div>
 
-            <!-- オークステータス -->
             <div class="status-row">
                 <span style="color:#ff6b6b; font-weight:bold; width: 45px;">オーク</span>
-                <span style="width: 32px;"></span> <!-- レイアウト固定用の空白 -->
+                <span style="width: 32px;"></span>
                 <div class="gauge-container" style="width: 45%;">
                     <div id="enemy-hp-bar" class="gauge-bar hp-bar-enemy" style="width: 100%;"></div>
                     <div id="enemy-hp-text" class="gauge-text">HP: 500</div>
@@ -459,24 +458,25 @@
                     <div id="enemy-charge-text" class="gauge-text">CHG: 0</div>
                 </div>
             </div>
-            <div class="status-row" style="font-size: 0.75rem; color:#8892b0;">
-                <span>SPD: 30 / IQ: 35 / ATK: 75 / DEF: 70</span>
-                <span>倍率速度: <span id="e-speed-val">-</span></span>
+            <div class="status-row" style="font-size: 0.7rem; color:#8892b0;">
+                <span>SPD:30/IQ:35/ATK:75/DEF:70</span>
+                <span>倍率速度:<span id="e-speed-val">-</span></span>
             </div>
         </div>
 
-        <!-- コマンド＆手札 -->
         <div id="command-area">
-            <div style="font-size:0.8rem; font-weight:bold; color:#a8b2d1;" id="turn-indicator">あなたのターン</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size:0.75rem; font-weight:bold; color:#a8b2d1;">
+                <span id="turn-indicator">あなたのターン</span>
+                <button id="toggle-hand-btn" class="toggle-btn" onclick="toggleHand()">手札を隠す</button>
+            </div>
             <div id="battle-controls">
                 <div id="hand-container"></div>
-                <button class="pass-btn" id="pass-button" onclick="playerPass()">カードを使わずにターン終了 (次ドロー+2)</button>
+                <button class="pass-btn" id="pass-button" onclick="playerPass()" style="width: 100%; margin-top: 4px;">カードを使わずにターン終了 (次ドロー+2)</button>
             </div>
             <button id="end-trigger" class="end-trigger-btn" style="display: none;" onclick="goToEnding()">激闘終結：結末（エンディング）を確認する</button>
         </div>
     </div>
 
-    <!-- フェーズ3：結慢画面 -->
     <div id="result-screen" class="screen">
         <h1 id="result-title">戦闘結末</h1>
         <div id="result-text"></div>
@@ -546,6 +546,7 @@ let isGameOver = false;
 let forceNextTurnSide = null;
 let isFilterEnabled = true;
 let finalMatchResult = '';
+let isHandVisible = true;
 
 function selectSide(side) {
     playerSide = side;
@@ -860,6 +861,20 @@ function toggleFilter() {
     updateUI();
 }
 
+/* 手札の表示ON / OFF切り替えシステム */
+function toggleHand() {
+    isHandVisible = !isHandVisible;
+    const container = document.getElementById('hand-container');
+    const btn = document.getElementById('toggle-hand-btn');
+    if (isHandVisible) {
+        container.style.display = 'flex';
+        btn.innerText = "手札を隠す";
+    } else {
+        container.style.display = 'none';
+        btn.innerText = "手札を見る";
+    }
+}
+
 function checkDeath() {
     if (heroine.current.hp <= 0) { 
         isGameOver = true; 
@@ -900,13 +915,11 @@ function goToEnding() {
 }
 
 function updateUI() {
-    // 儀玄HP・チャージ更新
     document.getElementById('heroine-hp-bar').style.width = `${(heroine.current.hp / 500) * 100}%`;
     document.getElementById('heroine-hp-text').innerText = `HP: ${heroine.current.hp}`;
     document.getElementById('heroine-charge-bar').style.width = `${Math.min(heroine.current.chargeValue, 100)}%`;
     document.getElementById('heroine-charge-text').innerText = `CHG: ${heroine.current.chargeValue}`;
 
-    // オークHP・チャージ更新
     document.getElementById('enemy-hp-bar').style.width = `${(enemy.current.hp / 500) * 100}%`;
     document.getElementById('enemy-hp-text').innerText = `HP: ${enemy.current.hp}`;
     document.getElementById('enemy-charge-bar').style.width = `${Math.min(enemy.current.chargeValue, 100)}%`;
@@ -969,10 +982,9 @@ function renderHand(char) {
         const cardEl = document.createElement('div');
         cardEl.className = `card ${card.isSpecial ? 'special' : ''} ${is陣法Disabled ? 'disabled' : ''}`;
         
-        // メタデータ部分にチャージ値（C）を追加
         cardEl.innerHTML = `
             <div class="card-name">${card.name}</div>
-            <div style="font-size:10px; color:#8892b0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${card.desc}</div>
+            <div style="font-size:9px; color:#8892b0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${card.desc}</div>
             <div class="card-meta">
                 <span>P:${card.power}</span>
                 <span>H:${card.hit}</span>
@@ -986,12 +998,18 @@ function renderHand(char) {
     });
 }
 
+/* ログを下に追加していく形式に変更。自動スクロールなし */
 function log(text, type) {
     const logArea = document.getElementById('log-area');
     const entry = document.createElement('div');
     entry.className = `log-entry log-${type}`;
     entry.innerHTML = text;
-    logArea.insertBefore(entry, logArea.firstChild);
+    
+    // 最新のものを一番下(末尾)に追加
+    logArea.appendChild(entry); 
+    
+    // 自動スクロール処理（scrollTopの移動）を意図的に排除
+    // ユーザーが自分のペースでスクロールして読み進められるよう、自動で動かないように設定
 }
 </script>
 </body>

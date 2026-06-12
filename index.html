@@ -51,7 +51,7 @@
             overflow: hidden;
             border-left: 1px solid #222530;
             border-right: 1px solid #222530;
-            overscroll-behavior-y: none; /* コンテナ側でも重ねてリロード防止 */
+            overscroll-behavior-y: none;
         }
 
         .screen {
@@ -122,7 +122,6 @@
             background: #000;
         }
 
-        /* 画像をメインに据えるため、縦幅を135px → 220pxへ大幅拡大 */
         #battle-visual-area {
             width: 100%;
             height: 220px;
@@ -140,13 +139,13 @@
         .battle-char-img {
             height: 100%;
             width: 100%;
-            object-fit: contain; /* 枠内に収まる最大サイズで綺麗に表示 */
+            object-fit: contain;
             position: relative;
             z-index: 1;
-            transition: transform 0.4s ease, filter 0.5s ease;
+            transition: transform 0.4s ease, filter 0.3s ease;
         }
 
-        /* 泥・タールレイヤー */
+        /* 泥・タールのリアル汚染レイヤー（暗さを抑え、飛び散ったシミを表現） */
         #mud-overlay {
             position: absolute;
             top: 0;
@@ -154,21 +153,23 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 35% 40%, rgba(38, 24, 12, 0.85) 0%, rgba(0,0,0,0) 55%),
-                radial-gradient(circle at 65% 75%, rgba(15, 12, 8, 0.95) 0%, rgba(0,0,0,0) 50%),
-                linear-gradient(135deg, rgba(0,0,0,0) 20%, rgba(28, 18, 10, 0.7) 60%, rgba(8, 5, 3, 0.9) 100%);
+                radial-gradient(circle at 25% 35%, rgba(45, 26, 12, 0.85) 0%, rgba(0,0,0,0) 35%),
+                radial-gradient(circle at 75% 45%, rgba(20, 15, 10, 0.9) 0%, rgba(0,0,0,0) 30%),
+                radial-gradient(circle at 35% 75%, rgba(38, 22, 9, 0.8) 0%, rgba(0,0,0,0) 40%),
+                radial-gradient(circle at 80% 80%, rgba(15, 12, 8, 0.95) 0%, rgba(0,0,0,0) 25%);
             mix-blend-mode: multiply;
             pointer-events: none;
             opacity: 0;
             z-index: 3;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.4s ease;
         }
 
+        /* 汚染時のフィルター：明度を85%に向上させ、セピアとコントラストで泥感を強調 */
         .battle-char-img.polluted-filter {
-            filter: sepia(45%) contrast(110%) brightness(50%) saturate(70%);
+            filter: sepia(55%) contrast(125%) brightness(85%) saturate(85%);
         }
         .polluted-bg {
-            background: linear-gradient(180deg, #1f150e 0%, #080503 100%) !important;
+            background: linear-gradient(180deg, #2a1f16 0%, #0c0907 100%) !important;
         }
         .visual-effect-glow {
             box-shadow: inset 0 0 30px rgba(58,150,255,0.4);
@@ -198,10 +199,9 @@
             border-color: #ad6b3b;
         }
 
-        /* テキスト表示欄（ログエリア）下に追加され、自動で動かない設定 */
         #log-area {
             flex: 1; 
-            min-height: 0; /* フレックス縮小を正しく機能させる */
+            min-height: 0;
             overflow-y: auto;
             padding: 10px;
             background: #090a0f;
@@ -236,7 +236,6 @@
         .log-spectator { background: rgba(255, 214, 10, 0.05); border-left-color: var(--text-spectator); color: #ffe14d;}
         .log-warning { background: rgba(255, 149, 0, 0.08); border-left-color: #ff9500; color: #ffb340; font-weight: bold; }
 
-        /* ステータスエリアをさらに低床・コンパクト化 */
         #status-area {
             background: var(--panel-bg);
             padding: 6px 8px;
@@ -290,7 +289,6 @@
             font-weight: bold;
         }
 
-        /* コマンドエリアの極小化 */
         #command-area {
             background: #151821;
             padding: 6px 8px;
@@ -386,6 +384,7 @@
 
 <div id="game-container">
 
+    <!-- フェーズ1：キャラクター選択画面 -->
     <div id="screen-select" class="screen active">
         <h1>闘技場のコスプレイヤー</h1>
         <div class="world-desc">
@@ -412,6 +411,7 @@
         </div>
     </div>
 
+    <!-- フェーズ2：バトル画面 -->
     <div id="screen-battle" class="screen">
         <div id="battle-visual-area">
             <div id="mud-overlay"></div>
@@ -477,6 +477,7 @@
         </div>
     </div>
 
+    <!-- フェーズ3：結慢画面 -->
     <div id="result-screen" class="screen">
         <h1 id="result-title">戦闘結末</h1>
         <div id="result-text"></div>
@@ -486,6 +487,14 @@
 </div>
 
 <script>
+// 儀玄の全4ポーズの画像プールを設定
+const heroineImages = [
+    "https://osias.com/cdn/shop/files/OSIAS_COSPLAY_Zenless_Zone_Zero_Yixuan_Cosplay_Costume_1.jpg?v=1763563871&width=1000",
+    "image_2.png",
+    "image_3.png",
+    "image_4.png"
+];
+
 const initialData = {
     heroine: {
         name: "儀玄",
@@ -562,7 +571,7 @@ function selectSide(side) {
         forecastText.innerText = "儀玄は高いATKと強力な通常技を持つ。最大の武器は「回避時に確定で次ターンを強奪する」特殊戦法。玄墨陣法で回避を高め、ヒット＆アウェイを狙うのが基本戦略となる。ただし、オークの酸性汚泥やタール攻撃を喰らうと、弱点『俗世の穢れ』が発動し、攻守が恒久的に致命的弱体化を遂げるため絶対の警戒が必要。";
     } else {
         diffBadge.innerHTML = `<span class="difficulty-badge diff-HARD">HARD</span>`;
-        forecastText.innerText = "儀玄の圧倒的な技のキレと、回避からの手番強奪ループは脅威そのもの。通常速度では捕らえにくいため、泥や酸性の粘液を伴う技（弱点属性）をいかに命中させるかが鍵。一度でも道士服を汚染すれば恒久デバフにより一気に形勢逆転、彼女のプライドを地下の泥に叩き落とせる。";
+        forecastText.innerText = "儀玄の圧倒的な技のキレと、回避からの手番強奪ループは脅威そのもの。通常速度では捕らえにくいため、泥や酸性の粘液を伴う技（弱点属性）をいかに命中させるかが鍵。一度でも道士服を汚染すれば恒久デバフにより一気に形形逆転、彼女のプライドを地下の泥に叩き落とせる。";
     }
 }
 
@@ -650,6 +659,10 @@ function nextTurnLoop() {
     const activeChar = activeSide === 'heroine' ? heroine : enemy;
     
     if (activeSide === 'heroine') {
+        // ★ 儀玄のターンごとに、4枚の画像からランダムで上書き
+        const randomImg = heroineImages[Math.floor(Math.random() * heroineImages.length)];
+        document.getElementById('heroine-visual').src = randomImg;
+
         if (heroine.current.evadeBuffTurns > 0) {
             heroine.current.evadeBuffTurns--;
             if(heroine.current.evadeBuffTurns === 0) log(`玄墨陣法の回避太極陣が消滅した。`, 'system');
@@ -861,7 +874,6 @@ function toggleFilter() {
     updateUI();
 }
 
-/* 手札の表示ON / OFF切り替えシステム */
 function toggleHand() {
     isHandVisible = !isHandVisible;
     const container = document.getElementById('hand-container');
@@ -998,18 +1010,12 @@ function renderHand(char) {
     });
 }
 
-/* ログを下に追加していく形式に変更。自動スクロールなし */
 function log(text, type) {
     const logArea = document.getElementById('log-area');
     const entry = document.createElement('div');
     entry.className = `log-entry log-${type}`;
     entry.innerHTML = text;
-    
-    // 最新のものを一番下(末尾)に追加
     logArea.appendChild(entry); 
-    
-    // 自動スクロール処理（scrollTopの移動）を意図的に排除
-    // ユーザーが自分のペースでスクロールして読み進められるよう、自動で動かないように設定
 }
 </script>
 </body>

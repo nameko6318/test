@@ -27,8 +27,6 @@
             margin: 0;
             padding: 0;
             -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         body {
@@ -39,6 +37,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         #game-container {
@@ -138,15 +138,15 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            overflow: hidden;
             flex-shrink: 0;
+            overflow: hidden;
         }
 
         .battle-char-container {
             width: 45%;
             height: 100%;
             display: flex;
-            justify( center;
+            justify-content: center;
             align-items: center;
             position: relative;
             overflow: visible;
@@ -161,7 +161,7 @@
             transition: transform 0.4s ease, filter 0.3s ease;
         }
 
-        /* 汚染タールスポット (キャラクターがはっきり見えるよう、シミを薄く透過) */
+        /* 汚染タールスポット（キャラクターをはっきり見せるための薄い透過表現） */
         .mud-overlay {
             position: absolute;
             top: 0;
@@ -175,26 +175,17 @@
             background-repeat: no-repeat;
         }
 
-        /* べっとりと付着した、飛び散ったタールの生々しいスポット表現 */
-        /* シミの箇所のみ色が乗り、それ以外は完全な透明(transparent)にすることで、キャラクターを暗く塗りつぶさずに表示 */
         .mud-overlay.active {
             opacity: 1;
             background-image:
-                /* シミ1（ハードエッジで粘り気のある溜まり） */
                 radial-gradient(circle at 35% 30%, rgba(40, 25, 10, 0.4) 0%, rgba(20, 10, 5, 0.3) 55%, transparent 60%),
-                /* シミ2（薄い広がりと飛び散り） */
                 radial-gradient(circle at 65% 30%, rgba(60, 40, 20, 0.3) 0%, rgba(40, 25, 10, 0.2) 50%, transparent 70%),
-                /* シミ3（下部の大きな溜まり） */
                 radial-gradient(circle at 20% 70%, rgba(20, 10, 5, 0.5) 0%, rgba(10, 5, 2, 0.4) 55%, transparent 75%),
-                /* シミ4（小さな飛び散りスポット） */
                 radial-gradient(ellipse at 80% 80%, rgba(50, 30, 15, 0.4) 0%, rgba(30, 15, 8, 0.3) 25%, transparent 35%),
-                /* シミ5（サイドの粘り気） */
                 radial-gradient(circle at 75% 60%, rgba(35, 20, 8, 0.4) 0%, rgba(25, 12, 5, 0.3) 48%, transparent 70%),
-                /* シミ6（小さな飛び散り追加） */
                 radial-gradient(circle at 50% 70%, rgba(20, 10, 5, 0.3) 0%, rgba(10, 5, 2, 0.2) 55%, transparent 60%);
         }
 
-        /* 汚染フィルターON時のヒロイン画像フィルター調整 (sepiaを弱め、暗くしない) */
         #heroine-visual-container.polluted .battle-char-img {
             filter: sepia(30%) contrast(110%); 
         }
@@ -205,7 +196,7 @@
 
         .filter-control-panel {
             display: flex;
-            justify( flex-end;
+            justify-content: flex-end;
             margin-bottom: 4px;
             padding: 0 2px;
             flex-shrink: 0;
@@ -227,7 +218,7 @@
             border-color: #ad6b3b;
         }
 
-        /* スワイプ可能なテキストログエリア */
+        /* テキストのスライド（スクロール）を確実に有効化 */
         #log-area {
             flex: 1; 
             min-height: 0;
@@ -242,6 +233,8 @@
             display: flex;
             flex-direction: column;
             scroll-behavior: smooth; 
+            -webkit-user-select: text;
+            user-select: text; /* ログエリア内のテキスト操作を許可 */
         }
 
         .log-entry {
@@ -275,7 +268,7 @@
 
         .status-row {
             display: flex;
-            justify( space-between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 3px;
         }
@@ -345,7 +338,7 @@
             padding: 4px;
             display: flex;
             flex-direction: column;
-            justify( space-between;
+            justify-content: space-between;
             font-size: 0.7rem;
             cursor: pointer;
             color: #fff;
@@ -361,7 +354,7 @@
             background: #2d3142 !important;
         }
         .card-name { font-weight: bold; line-height: 1.2; height: 2.4em; overflow: hidden; color: #e3e7f0; }
-        .card-meta { display: flex; justify( space-between; font-size: 0.55rem; color: #9daec6; font-weight: bold; }
+        .card-meta { display: flex; justify-content: space-between; font-size: 0.55rem; color: #9daec6; font-weight: bold; }
 
         .pass-btn {
             background: #2c3040;
@@ -373,7 +366,6 @@
             font-weight: bold;
         }
 
-        /* 確実にタップ可能な最前面ポップアップ結末ボタン */
         .end-trigger-btn {
             position: absolute;
             bottom: 20px;
@@ -398,7 +390,7 @@
             100% { box-shadow: 0 5px 25px rgba(240, 50, 50, 0.8); }
         }
 
-        forecast-panel {
+        .forecast-panel {
             background: #12141c;
             border: 1px dashed #3d4566;
             padding: 10px;
@@ -517,7 +509,7 @@
         </div>
 
         <div id="command-area">
-            <div style="display: flex; justify( space-between; align-items: center; font-size:0.75rem; font-weight:bold; color:#a8b2d1;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size:0.75rem; font-weight:bold; color:#a8b2d1;">
                 <span id="turn-indicator">あなたのターン</span>
                 <button id="toggle-hand-btn" class="toggle-btn" onclick="toggleHand()">手札を隠す</button>
             </div>
@@ -653,10 +645,10 @@ function selectSide(side) {
 
     if (side === 'heroine') {
         diffBadge.innerHTML = `<span style="background:#30d158; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">NORMAL</span>`;
-        forecastText.innerText = "儀玄は高いATKと強力な通常技を持つ。最大の武器は「回避時に確定で次ターンを強奪する」特殊戦法。玄墨陣法で回避を高め、ヒット＆アウェイを狙うのが基本戦略となる。ただし、オークの酸性汚泥やタール攻撃を喰らうと、弱点『俗世の穢れ』が発動し、攻守が恒久的に致命的弱体化を遂げるため絶対の警戒が必要。";
+        forecastText.innerText = "儀玄は高いATK hitch 力をあわせ持つ。最大の武器は「回避時に確定で次ターンを強奪する」特殊戦法。玄墨陣法で回避を高め、ヒット＆アウェイを狙うのが基本戦略となる。ただし、オークの酸性汚泥やタール攻撃を喰らうと、弱点『俗世の穢れ』が発動し、攻守が恒久的に致命的弱体化を遂げるため絶対の警戒が必要。";
     } else {
         diffBadge.innerHTML = `<span style="background:#ff453a; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">HARD</span>`;
-        forecastText.innerText = "儀玄の圧倒的な技のキレと、回避からの手番強奪ループは脅威そのもの。通常速度では捕らえにくいため、泥や酸性の粘液を伴う技（弱点属性）をいかに命中させるかが鍵。一度でも道士服を汚染すれば恒久デバフにより一気に形形逆転、彼女のプライドを地下の泥に叩き落とせる。";
+        forecastText.innerText = "儀玄の圧倒的な技のキレと、回避からの手番強奪ループは脅威そのもの。通常速度では捕らえにくいため、泥や酸性の粘液を伴う技（弱点属性）をいかに命中させるかが鍵。一度でも道士服を汚染すれば恒久デバフにより一気に戦局逆転、彼女のプライドを地下の泥に叩き落とせる。";
     }
 }
 
@@ -672,7 +664,7 @@ function startBattle() {
     }
 
     log(`<strong>◆ 闘技場バトル開幕 ◆</strong>`, 'system');
-    log(`青黒いエーテルエネルギーの残滓と、人質たちの歪んだ欲望が混ざり合う地下闘技場。`, 'text');
+    log(`青黒いエーテルエネルギーの残滓と、観客たちの歪んだ欲望が混ざり合う地下闘技場。`, 'text');
     log(`儀玄: <span class="log-heroine-outer">${heroine.dialogue.intro.outer}</span>`, 'text');
     log(`儀玄: <span class="log-heroine-inner">${heroine.dialogue.intro.inner}</span>`, 'text');
     log(`オーク: 「${enemy.dialogue.intro}」`, 'enemy-speech');
@@ -983,7 +975,6 @@ function checkDeath() {
     }
 }
 
-// 修正：結末ボタンが反応しないバグを解消するため、最前面にポップアップ配置
 function showEndingButton() {
     log(`<strong>☠️ 決着 ☠️ 闘技場の試合終了。勝敗が決しました。</strong>`, 'warning');
     document.getElementById('battle-controls').style.display = 'none';
@@ -992,17 +983,15 @@ function showEndingButton() {
     const endBtn = document.getElementById('end-trigger');
     endBtn.style.display = 'block';
     
-    // 結末画面のコピーボタンを表示
     document.getElementById('copy-log-btn').style.display = 'block';
-    document.getElementById('copy-action-log-btn').style.display = 'block'; // アクションコピーボタンを表示
+    document.getElementById('copy-action-log-btn').style.display = 'block';
 
     document.getElementById('command-area').style.pointerEvents = 'auto';
 }
 
 function goToEnding() {
-    // リザルト画面に移行するとき、コピーボタンは一旦隠す
     document.getElementById('copy-log-btn').style.display = 'none';
-    document.getElementById('copy-action-log-btn').style.display = 'none'; // アクションコピーボタンも隠す
+    document.getElementById('copy-action-log-btn').style.display = 'none';
     
     document.getElementById('screen-battle').classList.remove('active');
     document.getElementById('result-screen').classList.add('active');
@@ -1017,37 +1006,32 @@ function goToEnding() {
     } else {
         titleEl.innerText = "完全敗北・悪の組織への監禁エンド";
         titleEl.style.color = "var(--accent-enemy)";
-        textEl.innerHTML = `「ガハハ！ おい見ろよ！ あの偉そうな道士様が、泥まみれでピクピク動いてるぜぇ！」\n\nオークの無慈悲な質量攻撃に叩き潰され、儀玄はついに地に伏した。酸性汚泥とタールで完全に汚れ果てた道士服。剥ぎ取られた符籙。攻守の要たる透徹力の循環を恒久的に破壊された彼女に、もはや立ち上がる力は残されていない。\n\n儀玄: 「掌門たる私が、このような……俗世の、悍ましき欲望の泥に……くっ、殺せ……」\n\n地下闘技場の歪んだ観客（人質）たちからは、かつてない卑猥な野次と、高潔な存在が蹂躙され完全敗北を喫したことへの狂気的な歓声が爆発する。「おい、その服剥ぎ取っちまえ！」「監禁部屋へ連れてけ！」\n\n意識を失いかけた儀玄の長い髪をオークが手荒に掴み、観客席に見せつけるように引きずる。完全にエネルギーを奪取され無力化された彼女は、黒妖会の奥深くへと監禁され、凌辱と絶望の底へと突き落とされるバッドエンドを迎えた。`;
+        textEl.innerHTML = `「ガハハ！ おい見ろよ！ あの偉そうな道士様が、泥まみれでピクピク動いてるぜぇ！」\n\nオークの無慈悲な質量攻撃に叩き潰され、儀玄はついに地に伏した。酸性汚泥とタールで完全に汚れ果てた道士服。剥ぎ取られた符籙。攻守の要たる透徹力の循環を恒久的に破壊された彼女に、もはや立ち上がる力は残されていない。\n\n儀玄: 「掌門たる私が、このような……俗世の、悍ましき欲望の泥に……くっ、殺せ……」\n\n地下闘技場の歪んだ観客（人質）たちからは、かつてない卑猥な野次と、高潔な存在が蹂蹂躙され完全敗北を喫したことへの狂気的な歓声が爆発する。「おい、その服剥ぎ取っちまえ！」「監禁部屋へ連れてけ！」\n\n意識を失いかけた儀玄の長い髪をオークが手荒に掴み、観客席に見せつけるように引きずる。完全にエネルギーを奪取され無力化された彼女は、黒妖会の奥深くへと監禁され、凌辱と絶望の底へと突き落とされるバッドエンドを迎えた。`;
     }
 }
 
-// 修正：アクションとダメージログだけを収集してコピーする機能を追加
 function copyActionLog() {
     const logArea = document.getElementById('log-area');
     const entries = logArea.querySelectorAll('.log-entry');
     let actionLogText = "";
 
     entries.forEach(entry => {
-        // textクラスを持つログの中から、アクションとダメージに関連する文字列を検索
         if (entry.classList.contains('log-text')) {
             const text = entry.textContent;
             if (text.includes('の行動：【') || text.includes('のダメージ！')) {
-                // HTMLタグを除外したテキストのみを取得し、改行を加える
                 actionLogText += text + "\n";
             }
         }
     });
 
-    // クリップボードに書き込み
     if (actionLogText.trim()) {
         navigator.clipboard.writeText(actionLogText).then(() => {
-            log(`<strong>📋 アクションとダメージのログをクリップボードにコピーしました。</strong>`, 'system');
+            alert("アクションとダメージのログをコピーしました！");
         }).catch(err => {
-            log(`<strong>❌ ログのコピーに失敗しました。: ${err}</strong>`, 'warning');
-            alert("ログのコピーに失敗しました。ブラウザの設定を確認してください。");
+            alert("ログのコピーに失敗しました。");
         });
     } else {
-        log(`<strong>⚠️ コピーするアクションログがありません。</strong>`, 'warning');
+        alert("コピーするアクションログがありません。");
     }
 }
 
@@ -1058,13 +1042,12 @@ function copyLog() {
     entries.forEach(entry => { fullLogText += entry.innerText + "\n"; });
     if (fullLogText) {
         navigator.clipboard.writeText(fullLogText).then(() => {
-            log(`<strong>📋 戦闘ログをクリップボードにコピーしました。</strong>`, 'system');
+            alert("全戦闘ログをコピーしました！");
         }).catch(err => {
-            log(`<strong>❌ ログのコピーに失敗しました。: ${err}</strong>`, 'warning');
-            alert("ログのコピーに失敗しました。ブラウザの設定を確認してください。");
+            alert("ログのコピーに失敗しました。");
         });
     } else {
-        log(`<strong>⚠️ コピーするログがありません。</strong>`, 'warning');
+        alert("コピーするログがありません。");
     }
 }
 
@@ -1095,20 +1078,17 @@ function updateUI() {
         pollMarkerLine.style.display = 'block';
         fPanel.style.display = 'flex'; 
 
-        // 修正：フィルターON/OFFの判定を厳密に行う
         if (isFilterEnabled) {
-            heroineVisualContainer.classList.add('polluted'); // 弱いsepia
-            heroineMudOverlay.classList.add('active'); // 薄いタールグラデーション
+            heroineVisualContainer.classList.add('polluted'); 
+            heroineMudOverlay.classList.add('active'); 
         } else {
-            heroineVisualContainer.classList.remove('polluted'); // 完全OFF
-            heroineMudOverlay.classList.remove('active'); // 完全OFF
+            heroineVisualContainer.classList.remove('polluted'); 
+            heroineMudOverlay.classList.remove('active'); 
         }
     } else {
         pollMarker.innerHTML = '';
         pollMarkerLine.style.display = 'none';
         fPanel.style.display = 'none';
-        
-        // 汚染されていない場合は常に完全OFF
         heroineVisualContainer.classList.remove('polluted');
         heroineMudOverlay.classList.remove('active');
     }
@@ -1157,6 +1137,8 @@ function log(text, type) {
     entry.className = `log-entry log-${type}`;
     entry.innerHTML = text;
     logArea.appendChild(entry); 
+    
+    // 確実に最下部へ自動スクロール
     logArea.scrollTop = logArea.scrollHeight;
 }
 </script>

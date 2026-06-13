@@ -434,7 +434,6 @@
 
 <div id="game-container">
 
-    <!-- フェーズ1：キャラクター選択画面 -->
     <div id="screen-select" class="screen active">
         <h1>闘技場のコスプレイヤー</h1>
 
@@ -469,7 +468,6 @@
         </div>
     </div>
 
-    <!-- フェーズ2：バトル画面 -->
     <div id="screen-battle" class="screen">
         <div id="battle-visual-area">
             <div id="heroine-visual-container" class="battle-char-container">
@@ -541,7 +539,6 @@
         <button id="end-trigger" class="end-trigger-btn" style="display: none;" onclick="goToEnding()">激闘終結：結末（エンディング）を確認する</button>
     </div>
 
-    <!-- フェーズ3：結末画面 -->
     <div id="result-screen" class="screen">
         <h1 id="result-title">戦闘結末</h1>
         <div id="result-text"></div>
@@ -963,7 +960,7 @@ function executeCardEffect(attackerSide, card) {
     // 命中時処理：敵の戦法効果をリセット
     if (!isHeroineAttacking) {
         if (attacker.current.missCount > 0) {
-            log(`【牽制待ち戦法・解除】マッドタールの攻撃が命中し、研ぎ澄まされた狙いと硬さがリセットされた。`, 'system');
+            log(`【牽制待ち戦法・解除】マッドタールの攻撃が命中し、研ぎ澄まされた狙いと防御力バフがリセットされた。`, 'system');
         }
         attacker.current.missCount = 0; 
     }
@@ -1001,13 +998,13 @@ function executeCardEffect(attackerSide, card) {
                 log(`儀玄: 「はぁぁぁっ！ 塵と砕けよ！」`, 'text');
                 log(`マッドタール: 「グガァァッ！ イタイ、イタイゾォォ！」`, 'enemy-speech');
             } else {
-                log(`儀玄: 「きゃああっ！？…ぐ、なんて重い一撃だ…！」`, 'text');
+                log(`儀玄: 「きゃああっ！？…ぐ, なんて重い一撃だ…！」`, 'text');
                 log(`マッドタール: 「ギャハハハ！ モットナケ！ モットォ！」`, 'enemy-speech');
             }
         } else {
             if (isHeroineAttacking) {
                 log(`儀玄: 「これぞ雲霄の真髄！ 消し飛べぇぇっ！！」`, 'text');
-                log(`マッドタール: 「ギャアアアアッ！？ カタマル…オレノカラダガ、カタマルゥッ！！」`, 'enemy-speech');
+                log(`マッドタール: 「グギャアアアッ！？ カタマル…オレノカラダガ、カタマルゥッ！！」`, 'enemy-speech');
             } else {
                 log(`儀玄: 「ああっ！！…ば、馬鹿な、私の術式がこうも容易く…！？」`, 'text');
                 log(`マッドタール: 「グシャッ！ クダケチレ！ キレイナオニンギョウサン！」`, 'enemy-speech');
@@ -1125,7 +1122,7 @@ function checkDeath() {
 }
 
 function showEndingButton() {
-    log(`<strong>☠️ 決着 ☠️ 闘技場の試合終了。勝敗が決しました。</strong>`, 'warning');
+    log(`<strong>◆ 決着 ◆ 闘技場の試合終了。勝敗が決しました。</strong>`, 'warning');
     document.getElementById('battle-controls').style.display = 'none';
     document.getElementById('turn-indicator').innerText = "試合終了";
     
@@ -1155,6 +1152,53 @@ function goToEnding() {
     }
 }
 
+/* クリップボード保存の安全な共通処理（環境依存対策） */
+function execSecureCopy(text, successMsg) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert(successMsg);
+        }).catch(() => {
+            fallbackTextareaCopy(text, successMsg);
+        });
+    } else {
+        fallbackTextareaCopy(text, successMsg);
+    }
+}
+
+function fallbackTextareaCopy(text, successMsg) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    textArea.style.top = "0px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            alert(successMsg);
+        } else {
+            alert("ログのコピーに失敗しました。この端末設定ではテキストの自動コピーが制限されている可能性があります。");
+        }
+    } catch (err) {
+        alert("コピー中にエラーが発生しました。");
+    }
+    document.body.removeChild(textArea);
+}
+
+function copyLog() {
+    const logArea = document.getElementById('log-area');
+    const entries = logArea.querySelectorAll('.log-entry');
+    let fullLogText = "";
+    entries.forEach(entry => { fullLogText += entry.innerText + "\n"; });
+    if (fullLogText.trim()) {
+        execSecureCopy(fullLogText, "全戦闘ログを安全にコピーしました！");
+    } else {
+        alert("コピーするログがありません。");
+    }
+}
+
 function copyActionLog() {
     const logArea = document.getElementById('log-area');
     const entries = logArea.querySelectorAll('.log-entry');
@@ -1168,29 +1212,9 @@ function copyActionLog() {
     });
 
     if (actionLogText.trim()) {
-        navigator.clipboard.writeText(actionLogText).then(() => {
-            alert("「攻撃・ダメージ」のみの戦闘アクションログをコピーしました！");
-        }).catch(err => {
-            alert("ログのコピーに失敗しました。");
-        });
+        execSecureCopy(actionLogText, "「攻撃・ダメージ」のみの戦闘アクションログを安全にコピーしました！");
     } else {
-        alert("コピーするアクションログがありません。");
-    }
-}
-
-function copyLog() {
-    const logArea = document.getElementById('log-area');
-    const entries = logArea.querySelectorAll('.log-entry');
-    let fullLogText = "";
-    entries.forEach(entry => { fullLogText += entry.innerText + "\n"; });
-    if (fullLogText) {
-        navigator.clipboard.writeText(fullLogText).then(() => {
-            alert("全戦闘ログをコピーしました！");
-        }).catch(err => {
-            alert("ログのコピーに失敗しました。");
-        });
-    } else {
-        alert("コピーするログがありません。");
+        alert("コピーする対象のアクションログ（攻撃・ダメージ等）がまだありません。");
     }
 }
 

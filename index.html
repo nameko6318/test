@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>闘技場のコスプレイヤー - 雲霄の掌門・儀玄</title>
+    <title>闘技場のコスプレイヤー - 雲霄の掌門・儀玄 vs マッドタール</title>
     <style>
         :root {
             --bg-color: #0c0d10;
             --panel-bg: #151821;
             --text-color: #f1f3f9;
             --accent-heroine: #3a96ff; 
-            --accent-enemy: #ff453a;
+            --accent-enemy: #a55cca; /* スライムタールを意識した紫系のアクセントに変更 */
             --text-inner: #b0c2de;
             --text-spectator: #ffd60a;
         }
@@ -107,7 +107,7 @@
             transition: background 0.2s;
         }
         .btn-heroine { background: #1d71ff; }
-        .btn-enemy { background: #4b5366; }
+        .btn-enemy { background: #732d91; }
         .btn-start { background: #30d158; }
         .btn-copy { background: #3d4566; border: 1px solid #5a6594; }
         .btn-copy:active { background: #2b314a; }
@@ -161,7 +161,6 @@
             transition: transform 0.4s ease, filter 0.3s ease;
         }
 
-        /* 汚染タールスポット */
         .mud-overlay {
             position: absolute;
             top: 0;
@@ -178,16 +177,16 @@
         .mud-overlay.active {
             opacity: 1;
             background-image:
-                radial-gradient(circle at 35% 30%, rgba(40, 25, 10, 0.4) 0%, rgba(20, 10, 5, 0.3) 55%, transparent 60%),
-                radial-gradient(circle at 65% 30%, rgba(60, 40, 20, 0.3) 0%, rgba(40, 25, 10, 0.2) 50%, transparent 70%),
-                radial-gradient(circle at 20% 70%, rgba(20, 10, 5, 0.5) 0%, rgba(10, 5, 2, 0.4) 55%, transparent 75%),
-                radial-gradient(ellipse at 80% 80%, rgba(50, 30, 15, 0.4) 0%, rgba(30, 15, 8, 0.3) 25%, transparent 35%),
-                radial-gradient(circle at 75% 60%, rgba(35, 20, 8, 0.4) 0%, rgba(25, 12, 5, 0.3) 48%, transparent 70%),
-                radial-gradient(circle at 50% 70%, rgba(20, 10, 5, 0.3) 0%, rgba(10, 5, 2, 0.2) 55%, transparent 60%);
+                radial-gradient(circle at 35% 30%, rgba(30, 15, 40, 0.6) 0%, rgba(20, 10, 30, 0.4) 55%, transparent 60%),
+                radial-gradient(circle at 65% 30%, rgba(40, 20, 50, 0.5) 0%, rgba(30, 15, 40, 0.3) 50%, transparent 70%),
+                radial-gradient(circle at 20% 70%, rgba(20, 5, 25, 0.7) 0%, rgba(10, 2, 15, 0.5) 55%, transparent 75%),
+                radial-gradient(ellipse at 80% 80%, rgba(50, 20, 60, 0.6) 0%, rgba(30, 10, 40, 0.4) 25%, transparent 35%),
+                radial-gradient(circle at 75% 60%, rgba(35, 10, 45, 0.5) 0%, rgba(25, 5, 30, 0.4) 48%, transparent 70%),
+                radial-gradient(circle at 50% 70%, rgba(20, 5, 30, 0.5) 0%, rgba(10, 2, 20, 0.3) 55%, transparent 60%);
         }
 
         #heroine-visual-container.polluted .battle-char-img {
-            filter: sepia(30%) contrast(110%); 
+            filter: sepia(40%) hue-rotate(260deg) contrast(110%); 
         }
         
         .visual-effect-glow {
@@ -213,12 +212,11 @@
             transition: all 0.2s;
         }
         .toggle-btn.active {
-            background: #613a1e;
-            color: #ffb87a;
-            border-color: #ad6b3b;
+            background: #3a1a45;
+            color: #d78cf0;
+            border-color: #793c8f;
         }
 
-        /* 手動スクロールのみを受け付けるログエリア */
         #log-area {
             flex: 1; 
             min-height: 0;
@@ -251,9 +249,9 @@
         .log-text { color: var(--text-color); }
         .log-heroine-outer { color: #66aeff; font-weight: bold; }
         .log-heroine-inner { color: var(--text-inner); font-style: italic; display: block; margin-top: 4px; padding-left: 8px; border-left: 1px dashed #556278;}
-        .log-enemy-speech { background: rgba(255, 69, 58, 0.05); border-left-color: var(--accent-enemy); color: #ff766f; font-weight: bold; }
+        .log-enemy-speech { background: rgba(165, 92, 202, 0.1); border-left-color: var(--accent-enemy); color: #c481e3; font-weight: bold; }
         .log-spectator { background: rgba(255, 214, 10, 0.05); border-left-color: var(--text-spectator); color: #ffe14d;}
-        .log-warning { background: rgba(255, 149, 0, 0.08); border-left-color: #ff9500; color: #ffb340; font-weight: bold; }
+        .log-warning { background: rgba(255, 59, 48, 0.1); border-left-color: #ff3b30; color: #ff6b6b; font-weight: bold; }
 
         #status-area {
             background: var(--panel-bg);
@@ -282,7 +280,7 @@
 
         .gauge-bar { height: 100%; transition: width 0.3s ease; }
         .hp-bar-heroine { background: linear-gradient(90deg, #1d71ff, #3a96ff); }
-        .hp-bar-enemy { background: linear-gradient(90deg, #ff3b30, #ff453a); }
+        .hp-bar-enemy { background: linear-gradient(90deg, #732d91, #a55cca); }
         .charge-bar { background: linear-gradient(90deg, #ff9500, #ffd60a); }
         .gauge-text { position: absolute; width: 100%; text-align: center; font-size: 8px; line-height: 10px; color: #fff; font-weight: bold; }
 
@@ -300,12 +298,29 @@
         .m-絶望 { background: #000000; color: #ff3b30; border: 1px solid #ff3b30; }
 
         .debuff-badge {
-            background: #ff9500;
-            color: black;
+            background: #8e44ad;
+            color: white;
             font-size: 9px;
             padding: 1px 4px;
             border-radius: 3px;
             font-weight: bold;
+            margin-left: 4px;
+        }
+        .bind-badge {
+            background: #ff3b30;
+            color: white;
+            font-size: 9px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-left: 2px;
+            box-shadow: 0 0 5px rgba(255,59,48,0.5);
+            animation: bindBlink 1s infinite alternate;
+        }
+
+        @keyframes bindBlink {
+            0% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
 
         #command-area {
@@ -346,6 +361,10 @@
             background: linear-gradient(135deg, #1b2640, #133966);
             border-color: var(--accent-heroine);
             box-shadow: 0 0 6px rgba(58,150,255,0.4);
+        }
+        .card.enemy-special {
+            background: linear-gradient(135deg, #2b1136, #4b1b5e);
+            border-color: var(--accent-enemy);
         }
         .card.disabled {
             opacity: 0.4;
@@ -415,6 +434,7 @@
 
 <div id="game-container">
 
+    <!-- フェーズ1：キャラクター選択画面 -->
     <div id="screen-select" class="screen active">
         <h1>闘技場のコスプレイヤー</h1>
 
@@ -425,15 +445,15 @@
         </div>
 
         <div class="select-box">
-            <h3 style="color:#ff453a;">📷 【必須】悪役（オーク）の画像を選ぶ（1枚）</h3>
-            <p style="font-size:0.7rem; color:#8892b0; margin-bottom:6px;">タップして悪役の画像（立ち絵用）を1枚選択してください。</p>
+            <h3 style="color:#a55cca;">📷 【任意】悪役（マッドタール）の画像を選ぶ</h3>
+            <p style="font-size:0.7rem; color:#8892b0; margin-bottom:6px;">画像「image_4.png」を選択してください（1枚）</p>
             <input type="file" id="image-uploader-enemy" accept="image/*" onchange="loadEnemyImage(event)">
         </div>
 
         <div class="select-box">
             <h3>1. 操作陣営を選択</h3>
             <button class="btn btn-heroine" onclick="selectSide('heroine')">雲霄の掌門・儀玄</button>
-            <button class="btn btn-enemy" onclick="selectSide('enemy')">黒妖会門番：オーク・ガイスト</button>
+            <button class="btn btn-enemy" onclick="selectSide('enemy')">汚染の鉄顎・マッドタール</button>
         </div>
 
         <div id="forecast-area" style="display:none;">
@@ -449,6 +469,7 @@
         </div>
     </div>
 
+    <!-- フェーズ2：バトル画面 -->
     <div id="screen-battle" class="screen">
         <div id="battle-visual-area">
             <div id="heroine-visual-container" class="battle-char-container">
@@ -456,7 +477,7 @@
                 <div id="heroine-mud-overlay" class="mud-overlay"></div>
             </div>
             <div id="enemy-visual-container" class="battle-char-container">
-                <img id="enemy-visual" src="" alt="オーク 立ち絵" class="battle-char-img">
+                <img id="enemy-visual" src="" alt="悪役 立ち絵" class="battle-char-img">
             </div>
         </div>
 
@@ -467,18 +488,19 @@
         <div id="log-area"></div>
 
         <div id="status-area">
-            <div id="polluted-marker-line" style="margin-bottom: 2px; text-align: right; height: 14px; display: none;">
+            <div id="polluted-marker-line" style="margin-bottom: 2px; text-align: right; height: 14px;">
                 <span id="polluted-marker"></span>
             </div>
             
             <div class="status-row">
                 <span style="color:var(--accent-heroine); font-weight:bold; width: 45px;">儀玄</span>
                 <span id="heroine-mental" class="mental-tag m-通常" style="width: 32px;">通常</span>
-                <div class="gauge-container" style="width: 45%;">
+                <span id="heroine-bind-marker"></span>
+                <div class="gauge-container" style="width: 38%;">
                     <div id="heroine-hp-bar" class="gauge-bar hp-bar-heroine" style="width: 100%;"></div>
                     <div id="heroine-hp-text" class="gauge-text">HP: 500</div>
                 </div>
-                <div class="gauge-container" style="width: 22%;">
+                <div class="gauge-container" style="width: 20%;">
                     <div id="heroine-charge-bar" class="gauge-bar charge-bar" style="width: 0%;"></div>
                     <div id="heroine-charge-text" class="gauge-text">CHG: 0</div>
                 </div>
@@ -489,8 +511,7 @@
             </div>
 
             <div class="status-row">
-                <span style="color:#ff6b6b; font-weight:bold; width: 45px;">オーク</span>
-                <span style="width: 32px;"></span>
+                <span style="color:var(--accent-enemy); font-weight:bold; width: 55px;">タール</span>
                 <div class="gauge-container" style="width: 45%;">
                     <div id="enemy-hp-bar" class="gauge-bar hp-bar-enemy" style="width: 100%;"></div>
                     <div id="enemy-hp-text" class="gauge-text">HP: 500</div>
@@ -501,7 +522,7 @@
                 </div>
             </div>
             <div class="status-row" style="font-size: 0.7rem; color:#8892b0;">
-                <span>SPD:30/IQ:35/ATK:75/DEF:70</span>
+                <span>SPD:30/IQ:55/ATK:70/DEF:<span id="e-def">75</span></span>
                 <span>倍率速度: <span id="e-speed-val">-</span></span>
             </div>
         </div>
@@ -520,6 +541,7 @@
         <button id="end-trigger" class="end-trigger-btn" style="display: none;" onclick="goToEnding()">激闘終結：結末（エンディング）を確認する</button>
     </div>
 
+    <!-- フェーズ3：結末画面 -->
     <div id="result-screen" class="screen">
         <h1 id="result-title">戦闘結末</h1>
         <div id="result-text"></div>
@@ -572,7 +594,8 @@ const initialData = {
         current: { 
             hp: 500, actionCount: 0, chargeValue: 0, hand: [], skippedLastTurn: false, 
             state: "通常", lastState: "通常",
-            isPolluted: false,       
+            pollutionValue: 0,
+            isBound: false,
             evadeBuffTurns: 0,       
             disable阵法Turns: 0,    
             stunnedTurns: 0         
@@ -591,30 +614,33 @@ const initialData = {
         }
     },
     enemy: {
-        name: "鋼鉄のオーク・ガイスト",
-        title: "黒妖会・闘技場門番",
-        stats: { atk: 75, def: 70, spd: 30, int: 35 },
-        current: { hp: 500, actionCount: 0, chargeValue: 0, hand: [], skippedLastTurn: false },
+        name: "汚染の鉄顎・マッドタール",
+        title: "タール・スライム・触手",
+        stats: { atk: 70, def: 75, spd: 30, int: 55 },
+        current: { 
+            hp: 500, actionCount: 0, chargeValue: 0, hand: [], skippedLastTurn: false,
+            missCount: 0,
+            defDebuffTurns: 0
+        },
         normalCards: [
-            { id: "en1", name: "アイアン・クラッシュ", power: 35, hit: 80, charge: 20, desc: "大槌を叩きつける豪快な一撃" },
-            { id: "en2", name: "酸性汚泥の咆哮", power: 25, hit: 85, charge: 15, desc: "粘液を撒き散らす（弱点汚染属性）", isWeaknessStriker: true },
-            { id: "en3", name: "クイック・バックハンド", power: 15, hit: 95, charge: 10, desc: "出の早い裏拳" }
+            { id: "en1", name: "タール触手打撃", power: 60, hit: 80, charge: 10, pollute: 2, desc: "重く粘りつく触手で打撃" },
+            { id: "en2", name: "タール触手拘束", power: 50, hit: 50, charge: 30, pollute: 3, isBind: true, desc: "絡みつき行動を封じる" },
+            { id: "en3", name: "タール粘液噴射", power: 50, hit: 90, charge: 20, pollute: 10, desc: "強烈な汚染粘液を噴射する" }
         ],
         specialCards: [
-            { id: "es1", name: "ギガント・プレスカタストロフ", power: 80, hit: 75, desc: "全力で圧殺・蹂躙する", isSpecial: true },
-            { id: "es2", name: "泥塗れの粘液ホールド", power: 50, hit: 90, desc: "捕らえてタールで汚染する（弱点汚染属性）", isSpecial: true, isWeaknessStriker: true }
+            { id: "es1", name: "コローシブ・スラッジ", power: 70, hit: 150, pollute: 20, desc: "衣服を急速に汚染する強酸性粘液", isSpecial: true },
+            { id: "es2", name: "アビス・ヘル・バインド", power: 100, hit: 50, pollute: 20, isBind: true, desc: "絶望の体内侵入フィニッシュムーブ", isSpecial: true }
         ],
         dialogue: {
-            intro: "ガハハ！ 道士様の綺麗な黄色い服を、ドロドロのグチャグチャにしてやるぜぇ！",
-            attack: ["お高くとまってんじゃねえぞ掌門サマよォ！", "その綺麗な顔が歪むのが見てえんだよ！"]
+            intro: "グジュッ…グチャァ……キレイナオジョウチャンダ……ドロドロニシテヤル……",
         }
     }
 };
 
 const spectatorsPool = [
     "「おいおい、あの儀玄の道士服、スリットから見える脚がエロすぎるだろ！」",
-    "「掌門様が泥にままれて泣き叫ぶ姿を早く見せてくれオーク！」",
-    "「おい、服を汚せ！ 術を封じてあのプライドをへし折っちまえ！」",
+    "「掌門様がタールまみれで泣き叫ぶ姿を早く見せてくれ化け物！」",
+    "「おい、服を溶かせ！ 術を封じてあのプライドをへし折っちまえ！」",
     "「凛としたコスプレイヤーが絶望に染まる瞬間こそ、この闘技場の極上のお馳走だ！」"
 ];
 
@@ -643,10 +669,10 @@ function selectSide(side) {
 
     if (side === 'heroine') {
         diffBadge.innerHTML = `<span style="background:#30d158; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">NORMAL</span>`;
-        forecastText.innerText = "儀玄は高いATKと命中力をあわせ持つ。最大の武器は「回避時に確定で次ターンを強奪する」特殊戦法。玄墨陣法で回避を高め、ヒット＆アウェイを狙うのが基本戦略となる。ただし、オークの酸性汚泥やタール攻撃を喰らうと、弱点『俗世の穢れ』が発動し、攻守が恒久的に致命的弱体化を遂げるため絶対の警戒が必要。";
+        forecastText.innerText = "儀玄は高いATKと回避力を持つが、マッドタールの「汚染」によるSPD低下と「拘束」による回避不能状態には警戒が必要。敵は攻撃を避けるごとに狙いを研ぎ澄ましてくるため長期戦は不利。敵の弱点である「100以上のダメージを与えた際の肉体硬化（DEF低下）」を狙い、大技を一気に叩き込む戦術が求められる。";
     } else {
-        diffBadge.innerHTML = `<span style="background:#ff453a; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">HARD</span>`;
-        forecastText.innerText = "儀玄の圧倒的な技のキレと、回避からの手番強奪ループは脅威そのもの。通常速度では捕らえにくいため、泥や酸性の粘液を伴う技（弱点属性）をいかに命中させるかが鍵。一度でも道士服を汚染すれば恒久デバフにより一気に戦局逆転、彼女のプライドを地下の泥に叩き落とせる。";
+        diffBadge.innerHTML = `<span style="background:#a55cca; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">HARD</span>`;
+        forecastText.innerText = "圧倒的な回避力を持つ儀玄に対して、マッドタールの「牽制待ち戦法」が活きる。回避されるごとに命中力と防御力が上昇するため、焦らずに機をうかがえ。一度でも拘束できれば相手の回避は不可能となり、大量のタール汚染を浴びせるチャンス。衣服を汚染し尽くし、誇り高き掌門を絶望の底に沈めろ。";
     }
 }
 
@@ -665,7 +691,7 @@ function startBattle() {
     log(`青黒いエーテルエネルギーの残滓と、観客たちの歪んだ欲望が混ざり合う地下闘技場。`, 'text');
     log(`儀玄: <span class="log-heroine-outer">${heroine.dialogue.intro.outer}</span>`, 'text');
     log(`儀玄: <span class="log-heroine-inner">${heroine.dialogue.intro.inner}</span>`, 'text');
-    log(`オーク: 「${enemy.dialogue.intro}」`, 'enemy-speech');
+    log(`マッドタール: 「${enemy.dialogue.intro}」`, 'enemy-speech');
 
     nextTurnLoop();
 }
@@ -679,18 +705,24 @@ function drawCard(char, type) {
 
 function getModifiedStats(char, isHeroine) {
     let mod = { atk: char.stats.atk, def: char.stats.def, spd: char.stats.spd, int: char.stats.int };
-    if (!isHeroine) return mod;
+    
+    if (isHeroine) {
+        if (char.current.pollutionValue > 0) {
+            mod.spd -= char.current.pollutionValue;
+        }
 
-    if (char.current.isPolluted) {
-        mod.atk -= 25;
-        mod.def -= 25;
-    }
-
-    switch(char.current.state) {
-        case "昂揚": mod.atk += 10; mod.int += 10; break;
-        case "怯え": mod.atk -= 5; mod.int -= 5; mod.spd -= 5; break;
-        case "屈辱": mod.int -= 20; break;
-        case "絶望": mod.int -= 30; break;
+        switch(char.current.state) {
+            case "昂揚": mod.atk += 10; mod.int += 10; break;
+            case "怯え": mod.atk -= 5; mod.int -= 5; mod.spd -= 5; break;
+            case "屈辱": mod.int -= 20; break;
+            case "絶望": mod.int -= 30; break;
+        }
+    } else {
+        if (char.current.defDebuffTurns > 0) {
+            mod.def = 30;
+        } else {
+            mod.def += Math.min(25, char.current.missCount * 5);
+        }
     }
 
     if(mod.atk < 1) mod.atk = 1;
@@ -702,8 +734,9 @@ function getModifiedStats(char, isHeroine) {
 
 function calculateNextTurnSpeed() {
     const hMod = getModifiedStats(heroine, true);
+    const eMod = getModifiedStats(enemy, false);
     const hSpeed = (enemy.current.actionCount + 1) * hMod.spd;
-    const eSpeed = (heroine.current.actionCount + 1) * enemy.stats.spd;
+    const eSpeed = (heroine.current.actionCount + 1) * eMod.spd;
     return { hSpeed, eSpeed };
 }
 
@@ -746,7 +779,35 @@ function nextTurnLoop() {
         if (heroine.current.disable阵法Turns > 0) {
             heroine.current.disable阵法Turns--;
         }
-    } 
+    } else {
+        // 敵のターン開始時、デバフ減少
+        if (enemy.current.defDebuffTurns > 0) {
+            enemy.current.defDebuffTurns--;
+            if (enemy.current.defDebuffTurns === 0) log(`マッドタールの硬化が解け、防御力が元に戻った。`, 'system');
+        }
+    }
+
+    // 拘束状態の処理
+    if (activeChar.current.isBound) {
+        updateUI();
+        log(`<strong>◆ ターン獲得: ${activeSide === 'heroine' ? heroine.name : enemy.name} ◆</strong>`, 'system');
+        log(`⛓️ ${activeChar.name}は拘束されていて行動できない！`, 'warning');
+        
+        // ターン終了時に1/2で拘束解除
+        if (Math.random() < 0.5) {
+            activeChar.current.isBound = false;
+            if(activeSide === 'heroine') log(`儀玄: 「はぁっ…！ この程度の汚泥で…私を止められるとでも！」\n➡ 儀玄は力を振り絞り、自力で拘束を振りほどいた！`, 'system');
+            else log(`➡ マッドタールは拘束を解いた！`, 'system');
+        } else {
+            if(activeSide === 'heroine') log(`儀玄: 「くっ…離れろ…体が、動かない…っ！」\n➡ 拘束は強固で抜け出せない…！`, 'text');
+            else log(`➡ 拘束から抜け出せない…！`, 'text');
+        }
+
+        activeChar.current.actionCount++;
+        document.getElementById('command-area').style.pointerEvents = 'none';
+        setTimeout(nextTurnLoop, 1500);
+        return;
+    }
 
     const drawCount = activeChar.current.skippedLastTurn ? 2 : 1;
     activeChar.current.skippedLastTurn = false;
@@ -843,23 +904,68 @@ function executeCardEffect(attackerSide, card) {
     }
 
     let hitValue = attMod.spd + attMod.int + card.hit;
+    if (!isHeroineAttacking) {
+        hitValue += (attacker.current.missCount * 10);
+    }
+
     let evadeValue = defMod.spd + defMod.int;
 
     if (!isHeroineAttacking && heroine.current.evadeBuffTurns > 0) {
         evadeValue += 40;
     }
 
+    // 拘束状態なら回避不能
+    if (defender.current.isBound) {
+        evadeValue = 0;
+    }
+
     let hitRate = (hitValue - evadeValue) / 100;
-    if (hitRate < 1/3) hitRate = 1/3;
+    if (hitRate < 1/3 && !defender.current.isBound) hitRate = 1/3;
+    if (defender.current.isBound) hitRate = 1.0;
 
     const isHit = Math.random() < hitRate;
 
+    let didSpecialDialogue = false;
+
+    // 必殺技専用のセリフ（発動・回避時）
+    if (card.name === "青溟爆震") {
+        log(`儀玄: 「全エーテル解放！ 青溟の翼よ、奴を灰燼に帰せ！」`, 'text');
+    } else if (card.name === "コローシブ・スラッジ") {
+        log(`マッドタール: 「トケロ！ マジレ！ オマエノスベテヲ、ドロドロニシテヤルゥ！！」`, 'enemy-speech');
+        if (!isHit) {
+            log(`儀玄: 「遅すぎる！ そのような穢れ、触れるまでも無い！」`, 'text');
+            didSpecialDialogue = true;
+        } else {
+            log(`儀玄: 「きゃああっ！！ 熱い、服が溶け…いや、見ないで…っ！」`, 'text');
+            didSpecialDialogue = true;
+        }
+    } else if (card.name === "アビス・ヘル・バインド") {
+        log(`マッドタール: 「ニガサナイ…オマエノナカニ、ハイリコンデヤル…！！」`, 'enemy-speech');
+        if (!isHit) {
+            log(`儀玄: 「間一髪…！ 捕まれば、私は私でなくなっていた…！」`, 'text');
+            didSpecialDialogue = true;
+        } else {
+            log(`儀玄: 「んんっ！？ 口に、鼻に…！ やめ、はいってこないでぇぇっ！！…ぁ…」`, 'text');
+            didSpecialDialogue = true;
+        }
+    }
+
     if (!isHit) {
-        log(`【MISS】 ${defender.name}は攻撃を鮮やかに回避した！`, 'text');
+        if (!didSpecialDialogue) {
+            log(`【MISS】 ${defender.name}は攻撃を鮮やかに回避した！`, 'text');
+        }
+        
         if (!isHeroineAttacking) {
             forceNextTurnSide = 'heroine'; 
+            attacker.current.missCount++;
+            log(`【牽制待ち戦法】マッドタールは攻撃を避けられ、狙いを研ぎ澄ます！（次回命中+10 / DEF+5）`, 'system');
         }
         return;
+    }
+
+    // 以下、命中時
+    if (!isHeroineAttacking) {
+        attacker.current.missCount = 0; // 命中したら戦法リセット
     }
 
     const isCrit = Math.random() < (attMod.int / 200);
@@ -873,23 +979,71 @@ function executeCardEffect(attackerSide, card) {
     if (isCrit) log(`💥 クリティカル！ 急所を撃ち抜いた！`, 'system');
     log(`${defender.name}に <strong>${damage}</strong> のダメージ！`, 'text');
 
+    // 命中時の汎用セリフ（ダメージ帯ごと）
+    if (!didSpecialDialogue) {
+        if (damage <= 30) {
+            if (isHeroineAttacking) {
+                log(`儀玄: 「チッ…浅いか。不快な肉体だ」`, 'text');
+                log(`マッドタール: 「グジュ…キクワケ、ネェダロ…」`, 'enemy-speech');
+            } else {
+                log(`儀玄: 「ふん、そよ風にも劣るな」`, 'text');
+                log(`マッドタール: 「アサカッタカ…スベスベノハダ…」`, 'enemy-speech');
+            }
+        } else if (damage <= 60) {
+            if (isHeroineAttacking) {
+                log(`儀玄: 「ふっ、確実に削らせてもらうぞ」`, 'text');
+                log(`マッドタール: 「ギチチ…コシャクナ…！」`, 'enemy-speech');
+            } else {
+                log(`儀玄: 「くっ…油断はできんな」`, 'text');
+                log(`マッドタール: 「グチャァ…イイオトダ…」`, 'enemy-speech');
+            }
+        } else if (damage <= 99) {
+            if (isHeroineAttacking) {
+                log(`儀玄: 「はぁぁぁっ！ 塵と砕けよ！」`, 'text');
+                log(`マッドタール: 「グガァァッ！ イタイ、イタイゾォォ！」`, 'enemy-speech');
+            } else {
+                log(`儀玄: 「きゃああっ！？…ぐ、なんて重い一撃だ…！」`, 'text');
+                log(`マッドタール: 「ギャハハハ！ モットナケ！ モットォ！」`, 'enemy-speech');
+            }
+        } else {
+            if (isHeroineAttacking) {
+                log(`儀玄: 「これぞ雲霄の真髄！ 消し飛べぇぇっ！！」`, 'text');
+                log(`マッドタール: 「ギャアアアアッ！？ カタマル…オレノカラダガ、カタマルゥッ！！」`, 'enemy-speech');
+            } else {
+                log(`儀玄: 「ああっ！！…ば、馬鹿な、私の術式がこうも容易く…！？」`, 'text');
+                log(`マッドタール: 「グシャッ！ クダケチレ！ キレイナオニンギョウサン！」`, 'enemy-speech');
+            }
+        }
+    }
+
+    // 追加効果判定
     if (!isHeroineAttacking) {
-        if (card.isWeaknessStriker) {
-            heroine.current.isPolluted = true;
+        if (card.pollute > 0) {
+            heroine.current.pollutionValue += card.pollute;
+            log(`<span class="log-warning">⚠️ 【汚染】粘液が絡みつき、儀玄の汚染度が ${card.pollute} 上昇！（現在: ${heroine.current.pollutionValue}） SPDが低下していく…！</span>`, 'warning');
+            log(`儀玄: 「ああっ、服が、肌が…！ 泥に塗れて…術の循環が乱される…！」`, 'text');
             heroine.current.state = "屈辱";
-            log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の放った酸性汚泥・タールが黄色い道士服と符籙を無残に汚染！ 透徹力の循環が完全崩壊し、ATKとDEFが恒久的に-25された！</span>`, 'warning');
-            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世 of 泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
+        }
+        if (card.isBind) {
+            heroine.current.isBound = true;
+            log(`<span class="log-warning">⛓️ 【拘束】儀玄はタール触手に完全に捕らえられた！ 行動不能＆回避不能！</span>`, 'warning');
+            log(`儀玄: 「しまっ…！？ 触手が、体に巻き付いて…！ 離せ、この穢らわしい…！」`, 'text');
         }
     } else {
+        if (damage >= 100) {
+            enemy.current.defDebuffTurns = 2; // 自ターン終了時と次の相手ターン開始時を跨ぐため2を設定
+            log(`⚡ 【弱点露呈】100以上のダメージを受けたマッドタールの不定形肉体が硬化！1ターンの間、DEFが「30」に低下！`, 'warning');
+        }
         if (card.isUltimate) {
             heroine.current.evadeBuffTurns = 0; 
             heroine.current.disable阵法Turns = 2; 
             heroine.current.stunnedTurns = 1; 
             log(`⚡ 【青溟爆震の反動】全エーテルエネルギーを瞬時に吐き出した代償として、太極陣法が強制消滅。2ターンの間陣法が封じられ、次ターン行動不能となる！`, 'system');
 
-            if (damage === 1) {
+            // 絶望条件：1ダメージ→30以下のダメージに変更
+            if (damage <= 30) {
                 heroine.current.state = "絶望";
-                log(`⚠️ 極限まで解放した術式がオークの強靭な肉体に弾かれダメージは僅か1！ 儀玄の誇りが内側から瓦解し、【絶望】状態へ転落した。`, 'warning');
+                log(`⚠️ 極限まで解放した術式が粘液の盾に吸収され、まともなダメージが入らない！ 儀玄の誇りが内側から瓦解し、【絶望】状態へ転落した。`, 'warning');
             }
         }
     }
@@ -910,7 +1064,7 @@ function checkCharge(char) {
         const sCard = specPool[Math.floor(Math.random() * specPool.length)];
         if (char.current.hand.length < 5) {
             char.current.hand.push({ ...sCard });
-            log(`🔥 【CHARGE BURST】 ${char.name}は強力な術式カード【${sCard.name}】を高めたチャージからドローした！`, 'system');
+            log(`🔥 【CHARGE BURST】 ${char.name}は強力な必殺カード【${sCard.name}】を高めたチャージからドローした！`, 'system');
         }
     }
 }
@@ -926,11 +1080,11 @@ function updateMentalStateBeforeTurn() {
             log(`✨ 儀玄の精神が【昂揚】に満ちる。強力な術法の展開準備が整い、掌門としての自信が昂まる。`, 'system');
         } else if (enemy.current.hp >= heroine.current.hp * 2) {
             heroine.current.state = "怯え";
-            log(`😰 儀玄の精神が【怯え】へ。門番の圧倒的な肉体生命力を前に、超然とした構えの裏で微かな戦慄が走る。`, 'system');
+            log(`😰 儀玄の精神が【怯え】へ。化け物の圧倒的な生命力と悍ましい姿を前に、超然とした構えの裏で微かな戦慄が走る。`, 'system');
         }
     } else if (heroine.current.lastState === "怯え" && hasEnemySpecial) {
         heroine.current.state = "絶望";
-        log(`☠️ 儀玄の精神が【絶望】へと陥る。肉体的な劣勢に加え、オークの放つ凶悪な一撃の予兆が彼女の心をへし折る。`, 'warning');
+        log(`☠️ 儀玄の精神が【絶望】へと陥る。肉体的な劣勢に加え、触手と粘液の放つ凶悪な予兆が彼女の心をへし折る。`, 'warning');
     }
 }
 
@@ -987,7 +1141,6 @@ function goToEnding() {
     document.getElementById('screen-battle').classList.remove('active');
     document.getElementById('result-screen').classList.add('active');
 
-    // 結末画面に移った段階で、2種類のコピーボタンを確実に表示
     document.getElementById('copy-log-btn').style.display = 'block';
     document.getElementById('copy-action-log-btn').style.display = 'block';
 
@@ -997,11 +1150,11 @@ function goToEnding() {
     if (finalMatchResult === 'heroine_win') {
         titleEl.innerText = "雲霄の掌門・儀玄 勝利";
         titleEl.style.color = "var(--accent-heroine)";
-        textEl.innerHTML = `激闘の末、儀玄は青黒い墨のエーテルを極限まで尖らせた【命破拳】をオークの心核へと穿った。\n\n「これにて易は決した。悪業の報い、あの世で受けるが良い」\n\n崩れ落ちる巨体。水を打ったように静まり返る観客席。人質たちは、最高峰のコスプレイヤーが見せた超然たる術式と圧倒的な勝利の決めポーズに、ただ息を呑んでひれ伏していた。彼女の気丈で神聖な姿は、歪んだ熱狂すらも純粋な畏怖へと塗り替えたのだ。人質たちの救出フェーズへと移行する。`;
+        textEl.innerHTML = `マッドタール: 「ギャアアアアッ……ドロドロニ……オレガ、ドロドロニ……トケルゥ……！！」\n儀玄: 「これにて易は決した。おぞましき汚泥よ、その身ごと地獄で浄化されるがいい」\n\n激闘の末、儀玄の放った最大の一撃がマッドタールの硬化した急所を正確に穿ち、その不定形の肉体を完全に破砕した。\n汚泥の雨となって崩れ落ちる化け物を前に、水でも打ったように静まり返る観客席。人質たちは、最高峰のコスプレイヤーが見せた超然たる術式と、泥に塗れながらも一切揺らがなかった高潔な勝利のポーズに、ただ息を呑んでひれ伏していた。彼女の気丈で神聖な姿は、歪んだ熱狂すらも純粋な畏怖へと塗り替えたのだ。人質たちの救出フェーズへと移行する。`;
     } else {
-        titleEl.innerText = "完全敗北・悪の組織への監禁エンド";
-        titleEl.style.color = "var(--accent-enemy)";
-        textEl.innerHTML = `「ガハハ！ おい見ろよ！ あの偉そうな道士様が、泥まみれでピクピク動いてるぜぇ！」\n\nオークの無慈悲な質量攻撃に叩き潰され、儀玄はついに地に伏した。酸性汚泥とタールで完全に汚れ果てた道士服。剥ぎ取られた符籙。攻守の要たる透徹力の循環を恒久的に破壊された彼女に、もはや立ち上がる力は残されていない。\n\n儀玄: 「掌門たる私が、このような……俗世の、悍ましき欲望の泥に……くっ、殺せ……」\n\n地下闘技場の歪んだ観客（人質）たちからは、かつてない卑猥な野次と、高潔な存在が蹂蹂虙され完全敗北を喫したことへの狂気的な歓声が爆発する。「おい、その服剥ぎ取っちまえ！」「監禁部屋へ連れてけ！」\n\n意識を失いかけた儀玄の長い髪をオークが手荒に掴み、観客席に見せつけるように引きずる。完全にエネルギーを奪取され無力化された彼女は、黒妖会の奥深くへと監禁され、凌辱と絶望の底へと突き落とされるバッドエンドを迎えた。`;
+        titleEl.innerText = "完全敗北・絶望の汚染エンド";
+        titleEl.style.color = "#a55cca";
+        textEl.innerHTML = `儀玄: 「ああっ、嫌だ…！ はいってこないで…汚い、穢れ、る……あぁぁぁっ……♡」\nマッドタール: 「グチャァ…キレイナオジョウチャン、オレノナカデ、ズット、ドロドロダ……」\n\n強酸性のタール粘液によって道士服は無残に溶かされ、完全に汚染し尽くされた儀玄。攻守の要たる透徹力の循環は破壊され、無数の黒い触手が彼女の口や鼻、そしてコスチュームの隙間から体内へと侵入を果たす。内部から満たされる悍ましい泥の感触に、掌門としての誇りは完全に折れ、彼女は快楽とも絶望ともつかない悲鳴を上げながら地に這いつくばった。\n\n「おい見ろ！ あの偉そうな掌門様が泥まみれで四つん這いになってるぜ！！」「最高だ！ もっと汚して泣き叫ばせろ！！」\n地下闘技場の観客たちは、かつてない卑猥な野次と狂気的な歓声を爆発させる。完全に意識と肉体の主導権を奪われ、観客たちの前で無様に這いつくばる儀玄の姿。彼女はこのまま黒妖会の最深部へ連れ去られ、永遠に汚泥の快楽に沈められる絶望のバッドエンドを迎えた。`;
     }
 }
 
@@ -1011,9 +1164,7 @@ function copyActionLog() {
     let actionLogText = "";
 
     entries.forEach(entry => {
-        // 全体の文章（innerText）を取得
         const text = entry.innerText;
-        // 「の行動：」または「に XX のダメージ！」または「MISS（回避）」に関するログのみ抽出
         if (text.includes('の行動：') || text.includes('のダメージ！') || text.includes('攻撃を鮮やかに回避した！')) {
             actionLogText += text + "\n";
         }
@@ -1067,9 +1218,18 @@ function updateUI() {
     const fPanel = document.getElementById('filter-panel-area');
     const pollMarkerLine = document.getElementById('polluted-marker-line');
     const pollMarker = document.getElementById('polluted-marker');
+    const bindMarker = document.getElementById('heroine-bind-marker');
 
-    if (heroine.current.isPolluted) {
-        pollMarker.innerHTML = `<span class="debuff-badge">⚠️ 衣服・術式汚染（ステータス恒久低下中）</span>`;
+    // 拘束表示
+    if (heroine.current.isBound) {
+        bindMarker.innerHTML = `<span class="bind-badge">⛓️ 拘束</span>`;
+    } else {
+        bindMarker.innerHTML = '';
+    }
+
+    // 汚染表示
+    if (heroine.current.pollutionValue > 0) {
+        pollMarker.innerHTML = `<span class="debuff-badge">⚠️ 汚染度: ${heroine.current.pollutionValue} (SPD低下)</span>`;
         pollMarkerLine.style.display = 'block';
         fPanel.style.display = 'flex'; 
 
@@ -1099,6 +1259,9 @@ function updateUI() {
     document.getElementById('h-int').innerText = hMod.int;
     document.getElementById('h-atk').innerText = hMod.atk;
     document.getElementById('h-def').innerText = hMod.def;
+    
+    const eMod = getModifiedStats(enemy, false);
+    document.getElementById('e-def').innerText = eMod.def;
 }
 
 function renderHand(char) {
@@ -1107,8 +1270,14 @@ function renderHand(char) {
     
     char.current.hand.forEach((card, idx) => {
         const is陣法Disabled = (playerSide === 'heroine' && card.is阵法 && heroine.current.disable阵法Turns > 0);
+        let cardClass = 'card';
+        if (card.isSpecial) {
+            cardClass += playerSide === 'heroine' ? ' special' : ' enemy-special';
+        }
+        if (is陣法Disabled) cardClass += ' disabled';
+        
         const cardEl = document.createElement('div');
-        cardEl.className = `card ${card.isSpecial ? 'special' : ''} ${is陣法Disabled ? 'disabled' : ''}`;
+        cardEl.className = cardClass;
         
         cardEl.innerHTML = `
             <div class="card-name">${card.name}</div>
@@ -1132,8 +1301,6 @@ function log(text, type) {
     entry.className = `log-entry log-${type}`;
     entry.innerHTML = text;
     logArea.appendChild(entry); 
-    
-    // 自動スクロール処理（scrollTopの更新）を完全廃止しました
 }
 </script>
 </body>

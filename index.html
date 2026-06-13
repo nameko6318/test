@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
             --panel-bg: #151821;
             --text-color: #f1f3f9;
             --accent-heroine: #3a96ff; 
-            --accent-enemy: #a55cca; /* スライムタールを意識した紫系のアクセントに変更 */
+            --accent-enemy: #a55cca; 
             --text-inner: #b0c2de;
             --text-spectator: #ffd60a;
         }
@@ -669,10 +669,10 @@ function selectSide(side) {
 
     if (side === 'heroine') {
         diffBadge.innerHTML = `<span style="background:#30d158; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">NORMAL</span>`;
-        forecastText.innerText = "儀玄は高いATKと回避力を持つが、マッドタールの「汚染」によるSPD低下と「拘束」による回避不能状態には警戒が必要。敵は攻撃を避けるごとに狙いを研ぎ澄ましてくるため長期戦は不利。敵の弱点である「100以上のダメージを与えた際の肉体硬化（DEF低下）」を狙い、大技を一気に叩き込む戦術が求められる。";
+        forecastText.innerText = "儀玄は高いATKと回避力を持つが、マッドタールの「汚染」によるSPD低下・ATK/DEF低下と「拘束」による回避不能状態には警戒が必要。敵は攻撃を避けるごとに狙いを研ぎ澄ましてくるため長期戦は不利。敵の弱点である「100以上のダメージを与えた際の肉体硬化（DEF低下）」を狙い、大技を一気に叩き込む戦術が求められる。";
     } else {
         diffBadge.innerHTML = `<span style="background:#a55cca; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">HARD</span>`;
-        forecastText.innerText = "圧倒的な回避力を持つ儀玄に対して、マッドタールの「牽制待ち戦法」が活きる。回避されるごとに命中力と防御力が上昇するため、焦らずに機をうかがえ。一度でも拘束できれば相手の回避は不可能となり、大量のタール汚染を浴びせるチャンス。衣服を汚染し尽くし、誇り高き掌門を絶望の底に沈めろ。";
+        forecastText.innerText = "圧倒的な回避力を持つ儀玄に対して、マッドタールの「牽制待ち戦法」が活きる。回避されるごとに命中力と防御力が上限なく上昇するため、焦らずに機をうかがえ。一度でも拘束できれば相手の回避は不可能となり、大量のタール汚染を浴びせるチャンス。衣服を汚染し尽くし、誇り高き掌門を絶望の底に沈めろ。";
     }
 }
 
@@ -709,6 +709,8 @@ function getModifiedStats(char, isHeroine) {
     if (isHeroine) {
         if (char.current.pollutionValue > 0) {
             mod.spd -= char.current.pollutionValue;
+            mod.atk -= 25; // 汚染による攻撃力低下
+            mod.def -= 25; // 汚染による防御力低下
         }
 
         switch(char.current.state) {
@@ -719,9 +721,9 @@ function getModifiedStats(char, isHeroine) {
         }
     } else {
         if (char.current.defDebuffTurns > 0) {
-            mod.def = 30;
+            mod.def = 30; // 弱点硬化によるDEF低下
         } else {
-            mod.def += Math.min(25, char.current.missCount * 5);
+            mod.def += (char.current.missCount * 5); // 回避されるごとにDEF上昇（上限なし）
         }
     }
 
@@ -780,20 +782,17 @@ function nextTurnLoop() {
             heroine.current.disable阵法Turns--;
         }
     } else {
-        // 敵のターン開始時、デバフ減少
         if (enemy.current.defDebuffTurns > 0) {
             enemy.current.defDebuffTurns--;
             if (enemy.current.defDebuffTurns === 0) log(`マッドタールの硬化が解け、防御力が元に戻った。`, 'system');
         }
     }
 
-    // 拘束状態の処理
     if (activeChar.current.isBound) {
         updateUI();
         log(`<strong>◆ ターン獲得: ${activeSide === 'heroine' ? heroine.name : enemy.name} ◆</strong>`, 'system');
         log(`⛓️ ${activeChar.name}は拘束されていて行動できない！`, 'warning');
         
-        // ターン終了時に1/2で拘束解除
         if (Math.random() < 0.5) {
             activeChar.current.isBound = false;
             if(activeSide === 'heroine') log(`儀玄: 「はぁっ…！ この程度の汚泥で…私を止められるとでも！」\n➡ 儀玄は力を振り絞り、自力で拘束を振りほどいた！`, 'system');
@@ -914,7 +913,6 @@ function executeCardEffect(attackerSide, card) {
         evadeValue += 40;
     }
 
-    // 拘束状態なら回避不能
     if (defender.current.isBound) {
         evadeValue = 0;
     }
@@ -927,7 +925,6 @@ function executeCardEffect(attackerSide, card) {
 
     let didSpecialDialogue = false;
 
-    // 必殺技専用のセリフ（発動・回避時）
     if (card.name === "青溟爆震") {
         log(`儀玄: 「全エーテル解放！ 青溟の翼よ、奴を灰燼に帰せ！」`, 'text');
     } else if (card.name === "コローシブ・スラッジ") {
@@ -958,14 +955,17 @@ function executeCardEffect(attackerSide, card) {
         if (!isHeroineAttacking) {
             forceNextTurnSide = 'heroine'; 
             attacker.current.missCount++;
-            log(`【牽制待ち戦法】マッドタールは攻撃を避けられ、狙いを研ぎ澄ます！（次回命中+10 / DEF+5）`, 'system');
+            log(`【牽制待ち戦法】マッドタールは攻撃を避けられ、狙いを研ぎ澄ます！（次回命中+10 / DEF+5 [上限なし]）`, 'system');
         }
         return;
     }
 
-    // 以下、命中時
+    // 命中時処理：敵の戦法効果をリセット
     if (!isHeroineAttacking) {
-        attacker.current.missCount = 0; // 命中したら戦法リセット
+        if (attacker.current.missCount > 0) {
+            log(`【牽制待ち戦法・解除】マッドタールの攻撃が命中し、研ぎ澄まされた狙いと硬さがリセットされた。`, 'system');
+        }
+        attacker.current.missCount = 0; 
     }
 
     const isCrit = Math.random() < (attMod.int / 200);
@@ -979,7 +979,6 @@ function executeCardEffect(attackerSide, card) {
     if (isCrit) log(`💥 クリティカル！ 急所を撃ち抜いた！`, 'system');
     log(`${defender.name}に <strong>${damage}</strong> のダメージ！`, 'text');
 
-    // 命中時の汎用セリフ（ダメージ帯ごと）
     if (!didSpecialDialogue) {
         if (damage <= 30) {
             if (isHeroineAttacking) {
@@ -1016,11 +1015,10 @@ function executeCardEffect(attackerSide, card) {
         }
     }
 
-    // 追加効果判定
     if (!isHeroineAttacking) {
         if (card.pollute > 0) {
             heroine.current.pollutionValue += card.pollute;
-            log(`<span class="log-warning">⚠️ 【汚染】粘液が絡みつき、儀玄の汚染度が ${card.pollute} 上昇！（現在: ${heroine.current.pollutionValue}） SPDが低下していく…！</span>`, 'warning');
+            log(`<span class="log-warning">⚠️ 【汚染】粘液が絡みつき、儀玄の汚染度が ${card.pollute} 上昇！（現在: ${heroine.current.pollutionValue}） SPD・ATK・DEFが低下していく…！</span>`, 'warning');
             log(`儀玄: 「ああっ、服が、肌が…！ 泥に塗れて…術の循環が乱される…！」`, 'text');
             heroine.current.state = "屈辱";
         }
@@ -1031,7 +1029,7 @@ function executeCardEffect(attackerSide, card) {
         }
     } else {
         if (damage >= 100) {
-            enemy.current.defDebuffTurns = 2; // 自ターン終了時と次の相手ターン開始時を跨ぐため2を設定
+            enemy.current.defDebuffTurns = 2; 
             log(`⚡ 【弱点露呈】100以上のダメージを受けたマッドタールの不定形肉体が硬化！1ターンの間、DEFが「30」に低下！`, 'warning');
         }
         if (card.isUltimate) {
@@ -1040,7 +1038,6 @@ function executeCardEffect(attackerSide, card) {
             heroine.current.stunnedTurns = 1; 
             log(`⚡ 【青溟爆震の反動】全エーテルエネルギーを瞬時に吐き出した代償として、太極陣法が強制消滅。2ターンの間陣法が封じられ、次ターン行動不能となる！`, 'system');
 
-            // 絶望条件：1ダメージ→30以下のダメージに変更
             if (damage <= 30) {
                 heroine.current.state = "絶望";
                 log(`⚠️ 極限まで解放した術式が粘液の盾に吸収され、まともなダメージが入らない！ 儀玄の誇りが内側から瓦解し、【絶望】状態へ転落した。`, 'warning');
@@ -1220,16 +1217,14 @@ function updateUI() {
     const pollMarker = document.getElementById('polluted-marker');
     const bindMarker = document.getElementById('heroine-bind-marker');
 
-    // 拘束表示
     if (heroine.current.isBound) {
         bindMarker.innerHTML = `<span class="bind-badge">⛓️ 拘束</span>`;
     } else {
         bindMarker.innerHTML = '';
     }
 
-    // 汚染表示
     if (heroine.current.pollutionValue > 0) {
-        pollMarker.innerHTML = `<span class="debuff-badge">⚠️ 汚染度: ${heroine.current.pollutionValue} (SPD低下)</span>`;
+        pollMarker.innerHTML = `<span class="debuff-badge">⚠️ 汚染度: ${heroine.current.pollutionValue} (SPD・ATK・DEF低下)</span>`;
         pollMarkerLine.style.display = 'block';
         fPanel.style.display = 'flex'; 
 

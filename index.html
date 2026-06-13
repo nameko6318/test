@@ -161,7 +161,7 @@
             transition: transform 0.4s ease, filter 0.3s ease;
         }
 
-        /* 汚染タールスポット（キャラクターをはっきり見せるための薄い透過表現） */
+        /* 汚染タールスポット */
         .mud-overlay {
             position: absolute;
             top: 0;
@@ -218,7 +218,7 @@
             border-color: #ad6b3b;
         }
 
-        /* テキストのスライド（スクロール）を確実に有効化 */
+        /* 手動スクロールのみを受け付けるログエリア */
         #log-area {
             flex: 1; 
             min-height: 0;
@@ -232,9 +232,8 @@
             border: 2px solid #202433; 
             display: flex;
             flex-direction: column;
-            scroll-behavior: smooth; 
             -webkit-user-select: text;
-            user-select: text; /* ログエリア内のテキスト操作を許可 */
+            user-select: text;
         }
 
         .log-entry {
@@ -456,7 +455,6 @@
                 <img id="heroine-visual" src="" alt="儀玄 立ち絵" class="battle-char-img">
                 <div id="heroine-mud-overlay" class="mud-overlay"></div>
             </div>
-            
             <div id="enemy-visual-container" class="battle-char-container">
                 <img id="enemy-visual" src="" alt="オーク 立ち絵" class="battle-char-img">
             </div>
@@ -645,7 +643,7 @@ function selectSide(side) {
 
     if (side === 'heroine') {
         diffBadge.innerHTML = `<span style="background:#30d158; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">NORMAL</span>`;
-        forecastText.innerText = "儀玄は高いATK hitch 力をあわせ持つ。最大の武器は「回避時に確定で次ターンを強奪する」特殊戦法。玄墨陣法で回避を高め、ヒット＆アウェイを狙うのが基本戦略となる。ただし、オークの酸性汚泥やタール攻撃を喰らうと、弱点『俗世の穢れ』が発動し、攻守が恒久的に致命的弱体化を遂げるため絶対の警戒が必要。";
+        forecastText.innerText = "儀玄は高いATKと命中力をあわせ持つ。最大の武器は「回避時に確定で次ターンを強奪する」特殊戦法。玄墨陣法で回避を高め、ヒット＆アウェイを狙うのが基本戦略となる。ただし、オークの酸性汚泥やタール攻撃を喰らうと、弱点『俗世の穢れ』が発動し、攻守が恒久的に致命的弱体化を遂げるため絶対の警戒が必要。";
     } else {
         diffBadge.innerHTML = `<span style="background:#ff453a; color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:3px; font-weight:bold;">HARD</span>`;
         forecastText.innerText = "儀玄の圧倒的な技のキレと、回避からの手番強奪ループは脅威そのもの。通常速度では捕らえにくいため、泥や酸性の粘液を伴う技（弱点属性）をいかに命中させるかが鍵。一度でも道士服を汚染すれば恒久デバフにより一気に戦局逆転、彼女のプライドを地下の泥に叩き落とせる。";
@@ -880,7 +878,7 @@ function executeCardEffect(attackerSide, card) {
             heroine.current.isPolluted = true;
             heroine.current.state = "屈辱";
             log(`<span class="log-warning">⚠️ 弱点発動【俗世の穢れ】: 敵の放った酸性汚泥・タールが黄色い道士服と符籙を無残に汚染！ 透徹力の循環が完全崩壊し、ATKとDEFが恒久的に-25された！</span>`, 'warning');
-            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世の泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
+            log(`儀玄: <span class="log-heroine-inner">「くっ、俗世 of 泥に塗れ、術の循環が……！ 掌門たる私が、このような場所で醜態を晒すわけには……！」</span>`, 'text');
         }
     } else {
         if (card.isUltimate) {
@@ -982,19 +980,16 @@ function showEndingButton() {
     
     const endBtn = document.getElementById('end-trigger');
     endBtn.style.display = 'block';
-    
-    document.getElementById('copy-log-btn').style.display = 'block';
-    document.getElementById('copy-action-log-btn').style.display = 'block';
-
     document.getElementById('command-area').style.pointerEvents = 'auto';
 }
 
 function goToEnding() {
-    document.getElementById('copy-log-btn').style.display = 'none';
-    document.getElementById('copy-action-log-btn').style.display = 'none';
-    
     document.getElementById('screen-battle').classList.remove('active');
     document.getElementById('result-screen').classList.add('active');
+
+    // 結末画面に移った段階で、2種類のコピーボタンを確実に表示
+    document.getElementById('copy-log-btn').style.display = 'block';
+    document.getElementById('copy-action-log-btn').style.display = 'block';
 
     const titleEl = document.getElementById('result-title');
     const textEl = document.getElementById('result-text');
@@ -1006,7 +1001,7 @@ function goToEnding() {
     } else {
         titleEl.innerText = "完全敗北・悪の組織への監禁エンド";
         titleEl.style.color = "var(--accent-enemy)";
-        textEl.innerHTML = `「ガハハ！ おい見ろよ！ あの偉そうな道士様が、泥まみれでピクピク動いてるぜぇ！」\n\nオークの無慈悲な質量攻撃に叩き潰され、儀玄はついに地に伏した。酸性汚泥とタールで完全に汚れ果てた道士服。剥ぎ取られた符籙。攻守の要たる透徹力の循環を恒久的に破壊された彼女に、もはや立ち上がる力は残されていない。\n\n儀玄: 「掌門たる私が、このような……俗世の、悍ましき欲望の泥に……くっ、殺せ……」\n\n地下闘技場の歪んだ観客（人質）たちからは、かつてない卑猥な野次と、高潔な存在が蹂蹂躙され完全敗北を喫したことへの狂気的な歓声が爆発する。「おい、その服剥ぎ取っちまえ！」「監禁部屋へ連れてけ！」\n\n意識を失いかけた儀玄の長い髪をオークが手荒に掴み、観客席に見せつけるように引きずる。完全にエネルギーを奪取され無力化された彼女は、黒妖会の奥深くへと監禁され、凌辱と絶望の底へと突き落とされるバッドエンドを迎えた。`;
+        textEl.innerHTML = `「ガハハ！ おい見ろよ！ あの偉そうな道士様が、泥まみれでピクピク動いてるぜぇ！」\n\nオークの無慈悲な質量攻撃に叩き潰され、儀玄はついに地に伏した。酸性汚泥とタールで完全に汚れ果てた道士服。剥ぎ取られた符籙。攻守の要たる透徹力の循環を恒久的に破壊された彼女に、もはや立ち上がる力は残されていない。\n\n儀玄: 「掌門たる私が、このような……俗世の、悍ましき欲望の泥に……くっ、殺せ……」\n\n地下闘技場の歪んだ観客（人質）たちからは、かつてない卑猥な野次と、高潔な存在が蹂蹂虙され完全敗北を喫したことへの狂気的な歓声が爆発する。「おい、その服剥ぎ取っちまえ！」「監禁部屋へ連れてけ！」\n\n意識を失いかけた儀玄の長い髪をオークが手荒に掴み、観客席に見せつけるように引きずる。完全にエネルギーを奪取され無力化された彼女は、黒妖会の奥深くへと監禁され、凌辱と絶望の底へと突き落とされるバッドエンドを迎えた。`;
     }
 }
 
@@ -1016,17 +1011,17 @@ function copyActionLog() {
     let actionLogText = "";
 
     entries.forEach(entry => {
-        if (entry.classList.contains('log-text')) {
-            const text = entry.textContent;
-            if (text.includes('の行動：【') || text.includes('のダメージ！')) {
-                actionLogText += text + "\n";
-            }
+        // 全体の文章（innerText）を取得
+        const text = entry.innerText;
+        // 「の行動：」または「に XX のダメージ！」または「MISS（回避）」に関するログのみ抽出
+        if (text.includes('の行動：') || text.includes('のダメージ！') || text.includes('攻撃を鮮やかに回避した！')) {
+            actionLogText += text + "\n";
         }
     });
 
     if (actionLogText.trim()) {
         navigator.clipboard.writeText(actionLogText).then(() => {
-            alert("アクションとダメージのログをコピーしました！");
+            alert("「攻撃・ダメージ」のみの戦闘アクションログをコピーしました！");
         }).catch(err => {
             alert("ログのコピーに失敗しました。");
         });
@@ -1138,8 +1133,7 @@ function log(text, type) {
     entry.innerHTML = text;
     logArea.appendChild(entry); 
     
-    // 確実に最下部へ自動スクロール
-    logArea.scrollTop = logArea.scrollHeight;
+    // 自動スクロール処理（scrollTopの更新）を完全廃止しました
 }
 </script>
 </body>

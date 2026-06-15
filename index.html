@@ -445,7 +445,7 @@
 
         <div class="select-box">
             <h3 style="color:#a55cca;">📷 【任意】悪役（マッドタール）の画像を選ぶ</h3>
-            <p style="font-size:0.7rem; color:#8892b0; margin-bottom:6px;">画像「image_4.png」を選択してください（1枚）</p>
+            <p style="font-size:0.7rem; color:#8892b0; margin-bottom:6px;">画像を選択してください（1枚）</p>
             <input type="file" id="image-uploader-enemy" accept="image/*" onchange="loadEnemyImage(event)">
         </div>
 
@@ -556,6 +556,10 @@ const dummyImage = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/s
 
 let heroineImages = [dummyImage, dummyImage, dummyImage, dummyImage];
 let enemyImage = dummyImage;
+
+// ログ保存用のグローバル変数
+let storedFullLog = "";
+let storedActionLog = "";
 
 function loadHeroineImages(event) {
     const files = event.target.files;
@@ -679,15 +683,19 @@ function startBattle() {
     document.getElementById('heroine-visual').src = heroineImages[0];
     document.getElementById('enemy-visual').src = enemyImage;
 
+    // 変数リセット
+    storedFullLog = "";
+    storedActionLog = "";
+
     for(let i=0; i<3; i++) {
         drawCard(heroine, 'normal');
         drawCard(enemy, 'normal');
     }
 
-    log(`<strong>◆ 闘技場バトル開幕 ◆</strong>`, 'system');
+    log(`◆ 闘技場バトル開幕 ◆`, 'system');
     log(`青黒いエーテルエネルギーの残滓と、観客たちの歪んだ欲望が混ざり合う地下闘技場。`, 'text');
-    log(`儀玄: <span class="log-heroine-outer">${heroine.dialogue.intro.outer}</span>`, 'text');
-    log(`儀玄: <span class="log-heroine-inner">${heroine.dialogue.intro.inner}</span>`, 'text');
+    log(`儀玄: ${heroine.dialogue.intro.outer}`, 'text');
+    log(`儀玄: ${heroine.dialogue.intro.inner}`, 'text');
     log(`マッドタール: 「${enemy.dialogue.intro}」`, 'enemy-speech');
 
     nextTurnLoop();
@@ -753,7 +761,7 @@ function nextTurnLoop() {
     } 
     else if (forceNextTurnSide) {
         activeSide = forceNextTurnSide;
-        log(`⚡ <strong>儀玄の戦法【カウンター＆ヒット＆アウェイ】発動！ 回避から流れるように自身の主導権へ持ち込む！</strong>`, 'system');
+        log(`⚡ 儀玄の戦法【カウンター＆ヒット＆アウェイ】発動！ 回避から流れるように自身の主導権へ持ち込む！`, 'system');
         forceNextTurnSide = null;
     } else {
         const { hSpeed, eSpeed } = calculateNextTurnSpeed();
@@ -787,7 +795,7 @@ function nextTurnLoop() {
 
     if (activeChar.current.isBound) {
         updateUI();
-        log(`<strong>◆ ターン獲得: ${activeSide === 'heroine' ? heroine.name : enemy.name} ◆</strong>`, 'system');
+        log(`◆ ターン獲得: ${activeSide === 'heroine' ? heroine.name : enemy.name} ◆`, 'system');
         log(`⛓️ ${activeChar.name}は拘束されていて行動できない！`, 'warning');
         
         if (Math.random() < 0.5) {
@@ -820,11 +828,11 @@ function nextTurnLoop() {
     updateMentalStateBeforeTurn();
     updateUI();
 
-    log(`<strong>◆ ターン獲得: ${activeSide === 'heroine' ? heroine.name : enemy.name} ◆</strong>`, 'system');
+    log(`◆ ターン獲得: ${activeSide === 'heroine' ? heroine.name : enemy.name} ◆`, 'system');
 
     if(Math.random() < 0.4) {
         const yell = spectatorsPool[Math.floor(Math.random() * spectatorsPool.length)];
-        log(`<span class="log-spectator">観客席の歪んだ歓声: ${yell}</span>`, 'spectator');
+        log(`観客席の歪んだ歓声: ${yell}`, 'spectator');
     }
 
     if (playerSide === activeSide) {
@@ -891,7 +899,7 @@ function executeCardEffect(attackerSide, card) {
     const attMod = getModifiedStats(attacker, isHeroineAttacking);
     const defMod = getModifiedStats(defender, !isHeroineAttacking);
 
-    log(`${attacker.name}の行動：<strong>【${card.name}】</strong>`, 'text');
+    log(`${attacker.name}の行動：【${card.name}】`, 'text');
 
     if (isHeroineAttacking && card.is阵法) {
         heroine.current.evadeBuffTurns = 2;
@@ -960,7 +968,7 @@ function executeCardEffect(attackerSide, card) {
     // 命中時処理：敵の戦法効果をリセット
     if (!isHeroineAttacking) {
         if (attacker.current.missCount > 0) {
-            log(`【牽制待ち戦法・解除】マッドタールの攻撃が命中し、研ぎ澄まされた狙いと防御力バフがリセットされた。`, 'system');
+            log(`【牽制待ち戦法・解除】マッドタールの攻撃が命中し、研ぎ澄まされた狙いと硬さがリセットされた。`, 'system');
         }
         attacker.current.missCount = 0; 
     }
@@ -974,7 +982,7 @@ function executeCardEffect(attackerSide, card) {
     if (defender.current.hp < 0) defender.current.hp = 0;
 
     if (isCrit) log(`💥 クリティカル！ 急所を撃ち抜いた！`, 'system');
-    log(`${defender.name}に <strong>${damage}</strong> のダメージ！`, 'text');
+    log(`${defender.name}に ${damage} のダメージ！`, 'text');
 
     if (!didSpecialDialogue) {
         if (damage <= 30) {
@@ -998,13 +1006,13 @@ function executeCardEffect(attackerSide, card) {
                 log(`儀玄: 「はぁぁぁっ！ 塵と砕けよ！」`, 'text');
                 log(`マッドタール: 「グガァァッ！ イタイ、イタイゾォォ！」`, 'enemy-speech');
             } else {
-                log(`儀玄: 「きゃああっ！？…ぐ, なんて重い一撃だ…！」`, 'text');
+                log(`儀玄: 「きゃああっ！？…ぐ、なんて重い一撃だ…！」`, 'text');
                 log(`マッドタール: 「ギャハハハ！ モットナケ！ モットォ！」`, 'enemy-speech');
             }
         } else {
             if (isHeroineAttacking) {
                 log(`儀玄: 「これぞ雲霄の真髄！ 消し飛べぇぇっ！！」`, 'text');
-                log(`マッドタール: 「グギャアアアッ！？ カタマル…オレノカラダガ、カタマルゥッ！！」`, 'enemy-speech');
+                log(`マッドタール: 「ギャアアアアッ！？ カタマル…オレノカラダガ、カタマルゥッ！！」`, 'enemy-speech');
             } else {
                 log(`儀玄: 「ああっ！！…ば、馬鹿な、私の術式がこうも容易く…！？」`, 'text');
                 log(`マッドタール: 「グシャッ！ クダケチレ！ キレイナオニンギョウサン！」`, 'enemy-speech');
@@ -1015,13 +1023,13 @@ function executeCardEffect(attackerSide, card) {
     if (!isHeroineAttacking) {
         if (card.pollute > 0) {
             heroine.current.pollutionValue += card.pollute;
-            log(`<span class="log-warning">⚠️ 【汚染】粘液が絡みつき、儀玄の汚染度が ${card.pollute} 上昇！（現在: ${heroine.current.pollutionValue}） SPD・ATK・DEFが低下していく…！</span>`, 'warning');
+            log(`⚠️ 【汚染】粘液が絡みつき、儀玄の汚染度が ${card.pollute} 上昇！（現在: ${heroine.current.pollutionValue}） SPD・ATK・DEFが低下していく…！`, 'warning');
             log(`儀玄: 「ああっ、服が、肌が…！ 泥に塗れて…術の循環が乱される…！」`, 'text');
             heroine.current.state = "屈辱";
         }
         if (card.isBind) {
             heroine.current.isBound = true;
-            log(`<span class="log-warning">⛓️ 【拘束】儀玄はタール触手に完全に捕らえられた！ 行動不能＆回避不能！</span>`, 'warning');
+            log(`⛓️ 【拘束】儀玄はタール触手に完全に捕らえられた！ 行動不能＆回避不能！`, 'warning');
             log(`儀玄: 「しまっ…！？ 触手が、体に巻き付いて…！ 離せ、この穢らわしい…！」`, 'text');
         }
     } else {
@@ -1122,7 +1130,7 @@ function checkDeath() {
 }
 
 function showEndingButton() {
-    log(`<strong>◆ 決着 ◆ 闘技場の試合終了。勝敗が決しました。</strong>`, 'warning');
+    log(`☠️ 決着 ☠️ 闘技場の試合終了。勝敗が決しました。`, 'warning');
     document.getElementById('battle-controls').style.display = 'none';
     document.getElementById('turn-indicator').innerText = "試合終了";
     
@@ -1152,71 +1160,59 @@ function goToEnding() {
     }
 }
 
-/* クリップボード保存の安全な共通処理（環境依存対策） */
-function execSecureCopy(text, successMsg) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
+// ========== ログコピー処理（完全対応版） ========== //
+
+// 確実なコピーを実現するためのフォールバック処理
+function fallbackCopyTextToClipboard(text, logName) {
+    if (!text || text.trim() === "") {
+        alert("コピーするログがありません。");
+        return;
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(() => {
-            alert(successMsg);
-        }).catch(() => {
-            fallbackTextareaCopy(text, successMsg);
+            alert(`【成功】${logName}をクリップボードにコピーしました！`);
+        }).catch(err => {
+            useTextareaCopy(text, logName);
         });
     } else {
-        fallbackTextareaCopy(text, successMsg);
+        useTextareaCopy(text, logName);
     }
 }
 
-function fallbackTextareaCopy(text, successMsg) {
+function useTextareaCopy(text, logName) {
     const textArea = document.createElement("textarea");
     textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
     textArea.style.position = "fixed";
-    textArea.style.left = "-9999px";
-    textArea.style.top = "0px";
+    textArea.style.opacity = "0"; // 画面に見えないようにする
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
+
     try {
         const successful = document.execCommand('copy');
         if (successful) {
-            alert(successMsg);
+            alert(`【成功】${logName}をクリップボードにコピーしました！`);
         } else {
-            alert("ログのコピーに失敗しました。この端末設定ではテキストの自動コピーが制限されている可能性があります。");
+            alert("コピーに失敗しました。お使いのブラウザは対応していない可能性があります。");
         }
     } catch (err) {
-        alert("コピー中にエラーが発生しました。");
+        alert("エラーが発生し、コピーに失敗しました。");
     }
     document.body.removeChild(textArea);
 }
 
 function copyLog() {
-    const logArea = document.getElementById('log-area');
-    const entries = logArea.querySelectorAll('.log-entry');
-    let fullLogText = "";
-    entries.forEach(entry => { fullLogText += entry.innerText + "\n"; });
-    if (fullLogText.trim()) {
-        execSecureCopy(fullLogText, "全戦闘ログを安全にコピーしました！");
-    } else {
-        alert("コピーするログがありません。");
-    }
+    fallbackCopyTextToClipboard(storedFullLog, "全戦闘ログ");
 }
 
 function copyActionLog() {
-    const logArea = document.getElementById('log-area');
-    const entries = logArea.querySelectorAll('.log-entry');
-    let actionLogText = "";
-
-    entries.forEach(entry => {
-        const text = entry.innerText;
-        if (text.includes('の行動：') || text.includes('のダメージ！') || text.includes('攻撃を鮮やかに回避した！')) {
-            actionLogText += text + "\n";
-        }
-    });
-
-    if (actionLogText.trim()) {
-        execSecureCopy(actionLogText, "「攻撃・ダメージ」のみの戦闘アクションログを安全にコピーしました！");
-    } else {
-        alert("コピーする対象のアクションログ（攻撃・ダメージ等）がまだありません。");
-    }
+    fallbackCopyTextToClipboard(storedActionLog, "アクション・ダメージログ");
 }
+
+// ========== //
 
 function updateUI() {
     document.getElementById('heroine-hp-bar').style.width = `${(heroine.current.hp / 500) * 100}%`;
@@ -1318,8 +1314,35 @@ function log(text, type) {
     const logArea = document.getElementById('log-area');
     const entry = document.createElement('div');
     entry.className = `log-entry log-${type}`;
-    entry.innerHTML = text;
-    logArea.appendChild(entry); 
+    
+    // UI表示用にはそのままHTMLとして入れる（修飾などが入っているため）
+    // ログコピー用のテキスト化処理ではタグを除去するためにDOM機能を使う
+    let htmlContent = text;
+
+    // 前回の修飾付きHTML指定を外し、テキストベースでのシンプルな見た目に統一する
+    // （変数へプレーンテキストとして正しく格納するため）
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = text;
+    let plainText = tempDiv.textContent || tempDiv.innerText || "";
+
+    // 修飾タグが含まれている場合も、UI上はそのまま見せる
+    if (type === 'heroine-outer' || type === 'heroine-inner' || type === 'enemy-speech' || type === 'system' || type === 'warning') {
+        entry.innerHTML = htmlContent;
+    } else {
+        entry.innerHTML = htmlContent;
+    }
+    
+    logArea.appendChild(entry);
+    // ログが追加されたら一番下まで自動スクロールする
+    logArea.scrollTop = logArea.scrollHeight; 
+
+    // コピー用の変数にプレーンテキストを保存
+    storedFullLog += plainText + "\n";
+    
+    // アクションログ用フィルタリング
+    if (plainText.includes('の行動：') || plainText.includes('のダメージ！') || plainText.includes('攻撃を鮮やかに回避した！') || plainText.includes('MISS')) {
+        storedActionLog += plainText + "\n";
+    }
 }
 </script>
 </body>

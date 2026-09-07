@@ -557,7 +557,7 @@
 <script>
 const dummyImage = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='180'><rect width='140' height='180' fill='%23222530'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%235a6594' font-size='11'>画像未読込</text></svg>";
 
-let heroineImages = [dummyImage, dummyImage, dummyImage, dummyImage];
+let heroineImages = []; // 初期値を空にする
 let enemyImage = dummyImage;
 
 // ログ保存用のグローバル変数
@@ -645,7 +645,8 @@ const spectatorsPool = [
     "「おいおい、あの儀玄の道士服、スリットから見える脚がエロすぎるだろ！」",
     "「掌門様がタールまみれで泣き叫ぶ姿を早く見せてくれ化け物！」",
     "「おい、服を溶かせ！ 術を封じてあのプライドをへし折っちまえ！」",
-    "「凛としたコスプレイヤーが絶望に染まる瞬間こそ、この闘技場の極上のお馳走だ！」"
+    "
+	/凛としたコスプレイヤーが絶望に染まる瞬間こそ、この闘技場の極上のお馳走だ！」"
 ];
 
 let playerSide = 'heroine';
@@ -663,7 +664,7 @@ function selectSide(side) {
     document.getElementById('forecast-area').style.display = 'block';
     
     if (side === 'heroine') {
-        document.getElementById('select-preview-img').src = heroineImages[0];
+        document.getElementById('select-preview-img').src = heroineImages[0] || dummyImage;
     } else {
         document.getElementById('select-preview-img').src = enemyImage;
     }
@@ -683,6 +684,12 @@ function selectSide(side) {
 }
 
 function startBattle() {
+    // 画像の必須チェック
+    if (heroineImages.length === 0) {
+        alert("ヒロイン（儀玄）の画像をアップロードしてください。");
+        return;
+    }
+
     document.getElementById('screen-select').classList.remove('active');
     document.getElementById('screen-battle').classList.add('active');
     document.getElementById('heroine-visual').src = heroineImages[0];
@@ -938,182 +945,4 @@ function executeCardEffect(attackerSide, card) {
     if (card.name === "青溟爆震") {
         log(`儀玄: 「全エーテル解放！ 青溟の翼よ、奴を灰燼に帰せ！」`, 'text');
     } else if (card.name === "コローシブ・スラッジ") {
-        log(`マッドタール: 「トケロ！ マジレ！ オマエノスベテヲ、ドロドロニシテヤルゥ！！」`, 'enemy-speech');
-        if (!isHit) {
-            log(`儀玄: 「遅すぎる！ そのような穢れ、触れるまでも無い！」`, 'text');
-            didSpecialDialogue = true;
-        } else {
-            log(`儀玄: 「きゃああっ！！ 熱い、服が溶け…いや、見ないで…っ！」`, 'text');
-            didSpecialDialogue = true;
-        }
-    } else if (card.name === "アビス・ヘル・バインド") {
-        log(`マッドタール: 「ニガサナイ…オマエノナカニ、ハイリコンデヤル…！！」`, 'enemy-speech');
-        if (!isHit) {
-            log(`儀玄: 「間一髪…！ 捕まれば、私は私でなくなっていた…！」`, 'text');
-            didSpecialDialogue = true;
-        } else {
-            log(`儀玄: 「んんっ！？ 口に、鼻に…！ やめ、はいってこないでぇぇっ！！…ぁ…」`, 'text');
-            didSpecialDialogue = true;
-        }
-    }
-
-    if (!isHit) {
-        if (!didSpecialDialogue) {
-            log(`【MISS】 ${defender.name}は攻撃を鮮やかに回避した！`, 'text');
-        }
-        
-        if (!isHeroineAttacking) {
-            forceNextTurnSide = 'heroine'; 
-            attacker.current.missCount++;
-            log(`【牽制待ち戦法】マッドタールは攻撃を避けられ、狙いを研ぎ澄ます！（次回命中+10 / DEF+5 [上限なし]）`, 'system');
-        }
-        return;
-    }
-
-    // 命中時処理：敵の戦法効果をリセット
-    if (!isHeroineAttacking) {
-        if (attacker.current.missCount > 0) {
-            log(`【牽制待ち戦法・解除】マッドタールの攻撃が命中し、研ぎ澄まされた狙いと硬さがリセットされた。`, 'system');
-        }
-        attacker.current.missCount = 0; 
-    }
-
-    const isCrit = Math.random() < (attMod.int / 200);
-    let damage = attMod.atk + card.power - defMod.def;
-    if (damage < 1) damage = 1;
-    if (isCrit) damage = Math.floor(damage * 1.5);
-
-    // 儀玄の弱点効果：汚染状態だとダメージ1/2
-    if (isHeroineAttacking && attacker.current.pollutionValue > 0) {
-        damage = Math.floor(damage / 2);
-        log(`【汚染】衣服の汚れにより術の集中が乱れ、ダメージが半減した！`, 'warning');
-    }
-
-    defender.current.hp -= damage;
-    if (defender.current.hp < 0) defender.current.hp = 0;
-
-    if (isCrit) log(`💥 クリティカル！ 急所を撃ち抜いた！`, 'system');
-    log(`${defender.name}に ${damage} のダメージ！`, 'text');
-
-    if (!didSpecialDialogue) {
-        if (damage <= 30) {
-            if (isHeroineAttacking) {
-                log(`儀玄: 「チッ…浅いか。不快な肉体だ」`, 'text');
-                log(`マッドタール: 「グジュ…キクワケ、ネェダロ…」`, 'enemy-speech');
-            } else {
-                log(`儀玄: 「ふん、そよ風にも劣るな」`, 'text');
-                log(`マッドタール: 「アサカッタカ…スベスベノハダ…」`, 'enemy-speech');
-            }
-        } else if (damage <= 60) {
-            if (isHeroineAttacking) {
-                log(`儀玄: 「ふっ、確実に削らせてもらうぞ」`, 'text');
-                log(`マッドタール: 「ギチチ…コシャクナ…！」`, 'enemy-speech');
-            } else {
-                log(`儀玄: 「くっ…油断はできんな」`, 'text');
-                log(`マッドタール: 「グチャァ…イイオトダ…」`, 'enemy-speech');
-            }
-        } else if (damage <= 99) {
-            if (isHeroineAttacking) {
-                log(`儀玄: 「はぁぁぁっ！ 塵と砕けよ！」`, 'text');
-                log(`マッドタール: 「グガァァッ！ イタイ、イタイゾォォ！」`, 'enemy-speech');
-            } else {
-                log(`儀玄: 「きゃああっ！？…ぐ、なんて重い一撃だ…！」`, 'text');
-                log(`マッドタール: 「ギャハハハ！ モットナケ！ モットォ！」`, 'enemy-speech');
-            }
-        } else {
-            if (isHeroineAttacking) {
-                log(`儀玄: 「これぞ雲霄の真髄！ 消し飛べぇぇっ！！」`, 'text');
-                log(`マッドタール: 「ギャアアアアッ！？ カタマル…オレノカラダガ,カタマルゥッ！！」`, 'enemy-speech');
-            } else {
-                log(`儀玄: 「ああっ！！…ば,馬鹿な、私の術式がこうも容易く…！？」`, 'text');
-                log(`マッドタール: 「グシャッ！ クダケチレ！ キレイナオニンギョウサン！」`, 'enemy-speech');
-            }
-        }
-    }
-
-    if (!isHeroineAttacking) {
-        if (card.pollute > 0) {
-            heroine.current.pollutionValue += card.pollute;
-            log(`⚠️ 【汚染】粘液が絡みつき、儀玄の汚染度が ${card.pollute} 上昇！（現在: ${heroine.current.pollutionValue}） SPD・ATK・DEFが低下していく…！`, 'warning');
-            log(`儀玄: 「ああっ、服が、肌が…！ 泥に塗れて…術の循環が乱される…！」`, 'text');
-            heroine.current.state = "屈辱";
-        }
-        if (card.isBind) {
-            heroine.current.isBound = true;
-            log(`⛓️ 【拘束】儀玄はタール触手に完全に捕らえられた！ 行動不能＆回避不能！`, 'warning');
-            log(`儀玄: 「しまっ…！？ 触手が、体に巻き付いて…！ 離せ、この穢らわしい…！」`, 'text');
-        }
-    } else {
-        if (damage >= 100) {
-            enemy.current.defDebuffTurns = 2; 
-            log(`⚡ 【弱点露呈】100以上のダメージを受けたマッドタールの不定形肉体が硬化！1ターンの間、DEFが「30」に低下！`, 'warning');
-        }
-        if (card.isUltimate) {
-            heroine.current.evadeBuffTurns = 0; 
-            heroine.current.disable阵法Turns = 2; 
-            heroine.current.stunnedTurns = 1; 
-            log(`⚡ 【青溟爆震の反動】全エーテルエネルギーを瞬時に吐き出した代償として、太極陣法が強制消滅。2ターンの間陣法が封じられ、次ターン行動不能となる！`, 'system');
-
-            if (damage <= 30) {
-                heroine.current.state = "絶望";
-                log(`⚠️ 極限まで解放した術式が粘液の盾に吸収され、まともなダメージが入らない！ 儀玄の誇りが内側から瓦解し、【絶望】状態へ転落した。`, 'warning');
-            }
-        }
-    }
-
-    if (!card.isSpecial) {
-        const n = Math.floor(Math.random() * 4);
-        attacker.current.chargeValue += (card.charge * n);
-        checkCharge(attacker);
-    }
-
-    checkDeath();
-}
-
-function checkCharge(char) {
-    if (char.current.chargeValue >= 100) {
-        char.current.chargeValue -= 100;
-        const specPool = char.specialCards;
-        const sCard = specPool[Math.floor(Math.random() * specPool.length)];
-        if (char.current.hand.length < 5) {
-            char.current.hand.push({ ...sCard });
-            log(`🔥 【CHARGE BURST】 ${char.name}は強力な必殺カード【${sCard.name}】を高めたチャージからドローした！`, 'system');
-        }
-    }
-}
-
-function updateMentalStateBeforeTurn() {
-    heroine.current.lastState = heroine.current.state;
-    const hasHeroineSpecial = heroine.current.hand.some(c => c.isSpecial);
-    const hasEnemySpecial = enemy.current.hand.some(c => c.isSpecial);
-
-    if (heroine.current.lastState === "通常") {
-        if (hasHeroineSpecial) {
-            heroine.current.state = "昂揚";
-            log(`✨ 儀玄の精神が【昂揚】に満ちる。強力な術法の展開準備が整い、掌門としての自信が昂まる。`, 'system');
-        } else if (enemy.current.hp >= heroine.current.hp * 2) {
-            heroine.current.state = "怯え";
-            log(`😰 儀玄の精神が【怯え】へ。化け物の圧倒的な生命力と悍ましい姿を前に、超然とした構えの裏で微かな戦慄が走る。`, 'system');
-        }
-    } else if (heroine.current.lastState === "怯え" && hasEnemySpecial) {
-        heroine.current.state = "絶望";
-        log(`☠️ 儀玄の精神が【絶望】へと陥る。肉体的な劣勢に加え、触手と粘液の放つ凶悪な予兆が彼女の心をへし折る。`, 'warning');
-    }
-}
-
-function toggleFilter() {
-    isFilterEnabled = !isFilterEnabled;
-    const btn = document.getElementById('filter-toggle-btn');
-    if (isFilterEnabled) {
-        btn.innerText = "汚染フィルター: ON";
-        btn.classList.add('active');
-    } else {
-        btn.innerText = "汚染フィルター: OFF";
-        btn.classList.remove('active');
-    }
-    updateUI();
-}
-
-function toggleHand() {
-    isHandVisible = !isHandVisible;
-    const container = document.getElementById('hand
+        log(`マッドタール: 「トケロ！ マジレ！ オマエノスベテヲ、ドロドロニシテヤ
